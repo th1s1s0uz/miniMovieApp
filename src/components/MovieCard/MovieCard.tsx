@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Movie } from '../../services/tmdbService';
 import { formatRating, formatDate, getPosterUrl } from '../../utils/movieUtils';
 import { styles } from './MovieCard.style';
@@ -10,14 +10,30 @@ interface MovieCardProps {
 }
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
+  const [isPressed, setIsPressed] = useState(false);
+
   const handlePress = () => {
     if (onPress) {
       onPress(movie);
     }
   };
 
+  const handlePressIn = () => {
+    setIsPressed(true);
+  };
+
+  const handlePressOut = () => {
+    setIsPressed(false);
+  };
+
   return (
-    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.8}>
+    <TouchableOpacity 
+      style={[styles.container, isPressed && styles.containerActive]} 
+      onPress={handlePress} 
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      activeOpacity={1}
+    >
       <View style={styles.imageContainer}>
         <Image
           source={{

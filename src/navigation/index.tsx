@@ -4,6 +4,7 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from '../screens/Home/Home';
+import { MovieDetail } from '../screens/MovieDetail/MovieDetail';
 import { Profile } from '../screens/Profile/Profile';
 import { Settings } from '../screens/Settings/Settings';
 import { Favorites } from '../screens/Favorites/Favorites';
@@ -56,6 +57,13 @@ const RootStack = () => {
         }}
       />
       <Stack.Screen
+        name={AppNavigatorPaths.MovieDetail}
+        component={MovieDetail}
+        options={{
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
         name={AppNavigatorPaths.Profile}
         component={Profile}
       />
@@ -95,6 +103,7 @@ export const Navigation = () => {
 export type RootStackParamList = {
   HomeTabs: undefined;
   Home: undefined;
+  MovieDetail: { movieId: number };
   Favorites: undefined;
   Profile: { user?: string };
   Settings: undefined;

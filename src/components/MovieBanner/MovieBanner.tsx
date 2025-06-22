@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { Movie } from '../../services/tmdbService';
-import { getPosterUrl } from '../../utils/movieUtils';
+import { getPosterUrl, formatRating } from '../../utils/movieUtils';
 import { styles } from './MovieBanner.style';
 
 interface MovieBannerProps {
@@ -21,32 +21,31 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({ movie, onPress }) => {
       <Image 
         source={{ uri: imageUrl }} 
         style={styles.backgroundImage}
-        resizeMode="contain"
+        resizeMode="cover"
       />
-      <View style={styles.overlay}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.ratingContainer}>
-              <Text style={styles.rating}>⭐ {movie.vote_average.toFixed(1)}</Text>
-            </View>
-            <Text style={styles.releaseDate}>
-              {new Date(movie.release_date).getFullYear()}
-            </Text>
+      
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.rating}>⭐ {formatRating(movie.vote_average)}</Text>
           </View>
+          <Text style={styles.releaseDate}>
+            {new Date(movie.release_date).getFullYear()}
+          </Text>
+        </View>
+        
+        <View style={styles.bottomContent}>
+          <Text style={styles.title} numberOfLines={2}>
+            {movie.title}
+          </Text>
           
-          <View style={styles.bottomContent}>
-            <Text style={styles.title} numberOfLines={2}>
-              {movie.title}
-            </Text>
-            
-            <TouchableOpacity 
-              style={styles.exploreButton}
-              onPress={() => onPress(movie)}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.exploreButtonText}>İncele</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity 
+            style={styles.exploreButton}
+            onPress={() => onPress(movie)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.exploreButtonText}>İncele</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>

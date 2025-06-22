@@ -25,8 +25,7 @@ export function Home() {
   } = useMovies();
 
   const handleMoviePress = (movie: Movie) => {
-    // TODO: Navigate to movie details screen
-    console.log('Movie pressed:', movie.title);
+    navigation.navigate('MovieDetail', { movieId: movie.id });
   };
 
   const renderLoading = () => (

@@ -23,6 +23,43 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
   popularity: number;
+  // Detaylı bilgiler
+  adult?: boolean;
+  belongs_to_collection?: {
+    id: number;
+    name: string;
+    poster_path: string;
+    backdrop_path: string;
+  };
+  budget?: number;
+  genres?: Array<{
+    id: number;
+    name: string;
+  }>;
+  homepage?: string;
+  imdb_id?: string;
+  original_language?: string;
+  original_title?: string;
+  production_companies?: Array<{
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }>;
+  production_countries?: Array<{
+    iso_3166_1: string;
+    name: string;
+  }>;
+  revenue?: number;
+  runtime?: number;
+  spoken_languages?: Array<{
+    english_name: string;
+    iso_639_1: string;
+    name: string;
+  }>;
+  status?: string;
+  tagline?: string;
+  video?: boolean;
 }
 
 export interface MoviesResponse {
