@@ -1,5 +1,17 @@
+import axios from 'axios';
+
 const API_KEY = '11d209aeff612e28d4e0758c52485b0e';
 const BASE_URL = 'https://api.themoviedb.org/3';
+
+// Axios instance oluştur
+const tmdbApi = axios.create({
+  baseURL: BASE_URL,
+  params: {
+    api_key: API_KEY,
+    language: 'tr-TR',
+  },
+  timeout: 10000, // 10 saniye timeout
+});
 
 export interface Movie {
   id: number;
@@ -24,15 +36,10 @@ export const tmdbService = {
   // Get popular movies
   getPopularMovies: async (page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=tr-TR&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/movie/popular', {
+        params: { page }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching popular movies:', error);
       throw error;
@@ -42,15 +49,10 @@ export const tmdbService = {
   // Get now playing movies
   getNowPlayingMovies: async (page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=tr-TR&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/movie/now_playing', {
+        params: { page }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching now playing movies:', error);
       throw error;
@@ -60,15 +62,10 @@ export const tmdbService = {
   // Get top rated movies
   getTopRatedMovies: async (page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=tr-TR&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/movie/top_rated', {
+        params: { page }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching top rated movies:', error);
       throw error;
@@ -78,15 +75,10 @@ export const tmdbService = {
   // Get upcoming movies
   getUpcomingMovies: async (page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=tr-TR&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/movie/upcoming', {
+        params: { page }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching upcoming movies:', error);
       throw error;
@@ -96,15 +88,10 @@ export const tmdbService = {
   // Get trending movies (daily)
   getTrendingMovies: async (page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/trending/movie/day', {
+        params: { page }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching trending movies:', error);
       throw error;
@@ -114,15 +101,15 @@ export const tmdbService = {
   // Get discover movies (with filters)
   getDiscoverMovies: async (page: number = 1, sortBy: string = 'popularity.desc'): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=${sortBy}&page=${page}&include_adult=false&include_video=false`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/discover/movie', {
+        params: { 
+          page,
+          sort_by: sortBy,
+          include_adult: false,
+          include_video: false
+        }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching discover movies:', error);
       throw error;
@@ -132,15 +119,13 @@ export const tmdbService = {
   // Search movies
   searchMovies: async (query: string, page: number = 1): Promise<MoviesResponse> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/search/movie?api_key=${API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}&page=${page}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get('/search/movie', {
+        params: { 
+          query,
+          page
+        }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error searching movies:', error);
       throw error;
@@ -150,15 +135,8 @@ export const tmdbService = {
   // Get movie details
   getMovieDetails: async (movieId: number): Promise<Movie> => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=tr-TR`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await tmdbApi.get(`/movie/${movieId}`);
+      return response.data;
     } catch (error) {
       console.error('Error fetching movie details:', error);
       throw error;

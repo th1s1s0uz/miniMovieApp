@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { Movie, tmdbService } from '../../services/tmdbService';
+import { Movie } from '../../services/tmdbService';
+import { formatRating, formatDate, getPosterUrl } from '../../utils/movieUtils';
 import { styles } from './MovieCard.style';
 
 interface MovieCardProps {
@@ -15,22 +16,12 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.getFullYear().toString();
-  };
-
-  const formatRating = (rating: number) => {
-    return rating.toFixed(1);
-  };
-
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.8}>
       <View style={styles.imageContainer}>
         <Image
           source={{
-            uri: tmdbService.getImageUrl(movie.poster_path, 'w342')
+            uri: getPosterUrl(movie.poster_path, 'w342', '342x513')
           }}
           style={styles.image}
           resizeMode="cover"

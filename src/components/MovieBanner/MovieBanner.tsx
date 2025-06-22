@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { Movie } from '../../services/tmdbService';
-import { tmdbService } from '../../services/tmdbService';
+import { getPosterUrl } from '../../utils/movieUtils';
 import { styles } from './MovieBanner.style';
 
 interface MovieBannerProps {
@@ -10,9 +10,7 @@ interface MovieBannerProps {
 }
 
 export const MovieBanner: React.FC<MovieBannerProps> = ({ movie, onPress }) => {
-  const imageUrl = movie.poster_path 
-    ? tmdbService.getImageUrl(movie.poster_path, 'w500')
-    : 'https://via.placeholder.com/400x600/333/666?text=No+Image';
+  const imageUrl = getPosterUrl(movie.poster_path, 'w500', '500x750');
 
   return (
     <TouchableOpacity 

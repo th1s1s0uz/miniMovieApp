@@ -29,7 +29,6 @@ export const MovieSection: React.FC<MovieSectionProps> = ({
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        <Text style={styles.sectionSubtitle}>{subtitle}</Text>
       </View>
       
       <FlatList

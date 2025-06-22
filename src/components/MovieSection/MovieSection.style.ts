@@ -3,21 +3,17 @@ import { colors } from "../../constants/colors";
 
 export const styles = StyleSheet.create({
     section: {
-      marginBottom: 30,
+      marginBottom: 16,
     },
     sectionHeader: {
-      paddingHorizontal: 20,
-      paddingBottom: 15,
+      paddingHorizontal: 10,
+      paddingBottom: 10,
     },
     sectionTitle: {
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: 'bold',
       color: colors.white,
-      marginBottom: 5,
-    },
-    sectionSubtitle: {
-      fontSize: 14,
-      color: colors.darkGray,
+      marginBottom: 0,
     },
     horizontalList: {
       paddingHorizontal: 20,

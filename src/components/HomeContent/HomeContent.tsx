@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { Movie } from '../../services/tmdbService';
 import { MovieBanner } from '../MovieBanner/MovieBanner';
@@ -28,17 +28,16 @@ export const HomeContent: React.FC<HomeContentProps> = ({
   refreshing,
   onRefresh,
 }) => {
-  // Get featured movie for banner (random from trending movies)
-  const getFeaturedMovie = (): Movie | null => {
+  // Get featured movie for banner (random from trending movies) - useMemo ile sabit
+  const featuredMovie = useMemo((): Movie | null => {
     if (trendingMovies.length > 0) {
       const randomIndex = Math.floor(Math.random() * trendingMovies.length);
       return trendingMovies[randomIndex];
     }
     return null;
-  };
+  }, [trendingMovies]); // Sadece trendingMovies değiştiğinde yeniden hesapla
 
   const renderBanner = () => {
-    const featuredMovie = getFeaturedMovie();
     if (!featuredMovie) return null;
 
     return (
