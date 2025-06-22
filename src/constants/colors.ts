@@ -1,13 +1,10 @@
 export const colors = {
   // Ana renkler
-  green: '#b4d429',
+
   black: '#0d0d0d',
   white: '#f5f5f5',
   secondaryBlack: '#252525',
-  
-  // Türetilmiş renkler
-  lightGreen: '#c4e439', // Daha açık yeşil
-  darkGreen: '#a4c419', // Daha koyu yeşil
+  blue: '#43b4fc',
   
   // Gri tonları
   lightGray: '#e5e5e5',

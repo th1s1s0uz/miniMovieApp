@@ -5,7 +5,6 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from '../screens/Home/Home';
 import { MovieDetail } from '../screens/MovieDetail/MovieDetail';
-import { Profile } from '../screens/Profile/Profile';
 import { Settings } from '../screens/Settings/Settings';
 import { Favorites } from '../screens/Favorites/Favorites';
 import { NotFound } from '../screens/NotFound';
@@ -62,10 +61,6 @@ const RootStack = () => {
         options={{
           presentation: 'card',
         }}
-      />
-      <Stack.Screen
-        name={AppNavigatorPaths.Profile}
-        component={Profile}
       />
       <Stack.Screen
         name={AppNavigatorPaths.Settings}

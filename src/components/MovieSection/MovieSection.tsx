@@ -37,8 +37,6 @@ export const MovieSection: React.FC<MovieSectionProps> = ({
         keyExtractor={(item) => `section-${title}-${item.id}`}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.horizontalList}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
   );

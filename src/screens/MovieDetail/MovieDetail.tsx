@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  Image, 
-  ScrollView, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  Animated
 } from 'react-native';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import { Movie, tmdbService } from '../../services/tmdbService';
@@ -20,10 +20,11 @@ const { width, height } = Dimensions.get('window');
 export function MovieDetail() {
   const navigation = useAppNavigation<'MovieDetail'>();
   const movieId = (navigation.getState().routes.find(route => route.name === 'MovieDetail')?.params as any)?.movieId;
-  
+
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scrollY = new Animated.Value(0);
 
   useEffect(() => {
     if (movieId) {
@@ -51,7 +52,7 @@ export function MovieDetail() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.green} />
+        <ActivityIndicator size="large" color={colors.blue} />
         <Text style={styles.loadingText}>Film detayları yükleniyor...</Text>
       </View>
     );
@@ -72,17 +73,28 @@ export function MovieDetail() {
 
   return (
     <View style={styles.container}>
-      <CustomHeader 
-        title={movie.title || 'Film Detayı'} 
+      <CustomHeader
+        title={movie.title || 'Film Detayı'}
         showBackButton={true}
         onBackPress={() => navigation.goBack()}
+        scrollY={scrollY}
       />
-      
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+
+      <Animated.ScrollView
+        style={styles.scrollView}
+        bounces={false}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={8}
+      >
         <View style={styles.heroSection}>
-          <Image 
-            source={{ 
-              uri: movie.backdrop_path 
+          <Image
+            source={{
+              uri: movie.backdrop_path
                 ? getBackdropUrl(movie.backdrop_path, 'w780', '780x439')
                 : 'https://via.placeholder.com/780x439/666666/ffffff?text=Resim+Yok'
             }}
@@ -91,9 +103,9 @@ export function MovieDetail() {
           />
           <View style={styles.heroOverlay}>
             <View style={styles.heroContent}>
-              <Image 
-                source={{ 
-                  uri: movie.poster_path 
+              <Image
+                source={{
+                  uri: movie.poster_path
                     ? getPosterUrl(movie.poster_path, 'w342', '342x513')
                     : 'https://via.placeholder.com/342x513/666666/ffffff?text=Poster+Yok'
                 }}
@@ -129,7 +141,13 @@ export function MovieDetail() {
           {movie.genres && movie.genres.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Türler</Text>
-              <Text style={styles.detailText}>{formatGenres(movie.genres)}</Text>
+              <View style={styles.genresContainer}>
+                {movie.genres.map((genre, index) => (
+                  <View key={index} style={styles.genreItem}>
+                    <Text style={styles.genreText}>{genre.name}</Text>
+                  </View>
+                ))}
+              </View>
             </View>
           )}
 
@@ -155,56 +173,56 @@ export function MovieDetail() {
                 <Text style={styles.detailValue}>{formatRuntime(movie.runtime)}</Text>
               </View>
             )}
-            
+
             {movie.budget && movie.budget > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Bütçe</Text>
                 <Text style={styles.detailValue}>{formatBudget(movie.budget)}</Text>
               </View>
             )}
-            
+
             {movie.revenue && movie.revenue > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Gelir</Text>
                 <Text style={styles.detailValue}>{formatRevenue(movie.revenue)}</Text>
               </View>
             )}
-            
+
             {movie.status && movie.status.trim() !== '' && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Durum</Text>
                 <Text style={styles.detailValue}>{movie.status}</Text>
               </View>
             )}
-            
+
             {movie.original_language && movie.original_language.trim() !== '' && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Orijinal Dil</Text>
                 <Text style={styles.detailValue}>{movie.original_language.toUpperCase()}</Text>
               </View>
             )}
-            
+
             {movie.spoken_languages && movie.spoken_languages.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Konuşulan Diller</Text>
                 <Text style={styles.detailValue}>{formatSpokenLanguages(movie.spoken_languages)}</Text>
               </View>
             )}
-            
+
             {movie.production_countries && movie.production_countries.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Üretim Ülkeleri</Text>
                 <Text style={styles.detailValue}>{formatProductionCountries(movie.production_countries)}</Text>
               </View>
             )}
-            
+
             {movie.production_companies && movie.production_companies.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Üretim Şirketleri</Text>
                 <Text style={styles.detailValue}>{formatProductionCompanies(movie.production_companies)}</Text>
               </View>
             )}
-            
+
             {movie.imdb_id && movie.imdb_id.trim() !== '' && (
               <View style={[styles.detailRow, styles.detailRowLast]}>
                 <Text style={styles.detailLabel}>IMDB ID</Text>
@@ -213,7 +231,7 @@ export function MovieDetail() {
             )}
           </View>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 } 

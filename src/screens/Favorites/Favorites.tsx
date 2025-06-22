@@ -1,5 +1,5 @@
 import { Text } from '@react-navigation/elements';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './Favorites.style';
@@ -13,6 +13,8 @@ export function Favorites() {
     { id: 4, title: 'Pulp Fiction', year: 1994, rating: 8.9 },
   ];
 
+  const scrollY = new Animated.Value(0);
+
   const removeFavorite = (id: number) => {
     // TODO: Implement remove from favorites
     console.log('Remove favorite:', id);
@@ -20,29 +22,44 @@ export function Favorites() {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Favori Filmler" />
+      <CustomHeader 
+        title="Favori Filmler" 
+        scrollY={scrollY}
+      />
       
-      <View style={styles.content}>
-        <Text style={styles.subtitle}>Favori filmleriniz burada görünecek</Text>
-        
-        <ScrollView style={styles.favoritesList} showsVerticalScrollIndicator={false}>
-          {mockFavorites.map((movie) => (
-            <View key={movie.id} style={styles.movieItem}>
-              <View style={styles.movieInfo}>
-                <Text style={styles.movieTitle}>{movie.title}</Text>
-                <Text style={styles.movieYear}>{movie.year}</Text>
-                <Text style={styles.movieRating}>⭐ {movie.rating}</Text>
+      <Animated.ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={8}
+      >
+        <View style={styles.content}>
+          <Text style={styles.subtitle}>Favori filmleriniz burada görünecek</Text>
+          
+          <View style={styles.favoritesList}>
+            {mockFavorites.map((movie) => (
+              <View key={movie.id} style={styles.movieItem}>
+                <View style={styles.movieInfo}>
+                  <Text style={styles.movieTitle}>{movie.title}</Text>
+                  <Text style={styles.movieYear}>{movie.year}</Text>
+                  <Text style={styles.movieRating}>⭐ {movie.rating}</Text>
+                </View>
+                <TouchableOpacity 
+                  style={styles.removeButton} 
+                  onPress={() => removeFavorite(movie.id)}
+                >
+                  <Ionicons name="heart-dislike" size={20} color={colors.error} />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity 
-                style={styles.removeButton} 
-                onPress={() => removeFavorite(movie.id)}
-              >
-                <Ionicons name="heart-dislike" size={20} color={colors.error} />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+            ))}
+          </View>
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 }

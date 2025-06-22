@@ -16,7 +16,7 @@ interface ButtonProps {
 export const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
-  backgroundColor = colors.green,
+  backgroundColor = colors.blue,
   textColor = colors.black,
   style,
   textStyle,

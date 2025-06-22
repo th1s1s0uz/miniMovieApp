@@ -4,10 +4,16 @@ import { colors } from "../../constants/colors";
 export const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.secondaryBlack,
+      backgroundColor: colors.black,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
     },
     content: {
-      paddingHorizontal: 0
+      flex: 1,
+      backgroundColor: colors.black,
     },
     title: {
       fontSize: 28,

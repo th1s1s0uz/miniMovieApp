@@ -4,7 +4,13 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.backgroundColor,
+      backgroundColor: colors.secondaryBlack,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingTop: 100, // Header height
     },
     content: {
       flex: 1,
@@ -12,7 +18,7 @@ export const styles = StyleSheet.create({
     },
     subtitle: {
       fontSize: 16,
-      color: colors.secondaryText,
+      color: colors.white,
       textAlign: 'center',
       marginTop: 8,
       marginBottom: 30,
@@ -21,7 +27,7 @@ export const styles = StyleSheet.create({
       flex: 1,
     },
     movieItem: {
-      backgroundColor: colors.cardBackground,
+      backgroundColor: colors.black,
       borderRadius: 12,
       padding: 16,
       marginBottom: 12,
@@ -42,22 +48,22 @@ export const styles = StyleSheet.create({
     movieTitle: {
       fontSize: 18,
       fontWeight: '600',
-      color: colors.primaryText,
+      color: colors.white,
       marginBottom: 4,
     },
     movieYear: {
       fontSize: 14,
-      color: colors.secondaryText,
+      color: colors.darkGray,
       marginBottom: 4,
     },
     movieRating: {
       fontSize: 14,
-      color: colors.warning,
+      color: colors.blue,
       fontWeight: '500',
     },
     removeButton: {
       padding: 8,
       borderRadius: 20,
-      backgroundColor: colors.lightGray,
+      backgroundColor: colors.secondaryBlack,
     },
   }); 

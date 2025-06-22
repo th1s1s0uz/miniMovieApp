@@ -7,18 +7,12 @@ export const styles = StyleSheet.create({
     },
     sectionHeader: {
       paddingHorizontal: 10,
-      paddingBottom: 10,
+      paddingBottom: 8,
     },
     sectionTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       color: colors.white,
       marginBottom: 0,
-    },
-    horizontalList: {
-      paddingHorizontal: 20,
-    },
-    separator: {
-      width: 15,
     },
   });

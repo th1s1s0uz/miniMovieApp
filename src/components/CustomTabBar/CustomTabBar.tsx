@@ -79,7 +79,7 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
                 <Ionicons
                   name={iconName as any}
                   size={24}
-                  color={isFocused ? colors.green : colors.lightText}
+                  color={isFocused ? colors.blue : colors.lightText}
                 />
               </View>
             </View>
