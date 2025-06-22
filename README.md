@@ -64,3 +64,31 @@ The `ios` and `android` folder are gitignored in the project by default as they 
 ---
 
 Demo assets are from [lucide.dev](https://lucide.dev/)
+
+# Project Rules – React Native
+
+This project is developed for professional purposes. Code quality and maintainability must be top priority at all times.
+
+---
+
+## ✅ General Rules
+
+- The project must be built in a **clean, professional** manner.
+- Code must be **readable**, **scalable**, and **maintainable**.
+
+---
+
+## ❌ Platform-Specific Folders
+
+- **Never** modify the `android/` or `ios/` folders.
+  - Native code is strictly off-limits.
+  - Only React Native APIs and cross-platform libraries should be used.
+
+---
+
+## 🧱 Component Structure
+
+- All UI should be created using **reusable components**.
+- Components must be organized under the `components/` directory.
+- Avoid code duplication by separating reusable logic into components.
+
