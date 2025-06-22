@@ -1,102 +1,105 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HeaderButton, Text } from '@react-navigation/elements';
 import {
-  createStaticNavigation,
-  StaticParamList,
+  NavigationContainer,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image } from 'react-native';
-import bell from '../assets/bell.png';
-import newspaper from '../assets/newspaper.png';
-import { Home } from './screens/Home';
-import { Profile } from './screens/Profile';
-import { Settings } from './screens/Settings';
-import { Updates } from './screens/Updates';
-import { NotFound } from './screens/NotFound';
+import { Home } from '../screens/Home/Home';
+import { Profile } from '../screens/Profile/Profile';
+import { Settings } from '../screens/Settings/Settings';
+import { Favorites } from '../screens/Favorites/Favorites';
+import { NotFound } from '../screens/NotFound';
+import AppNavigatorPaths from './AppNavigatorPaths';
+import { CustomTabBar } from '../components/CustomTabBar/CustomTabBar';
 
-const HomeTabs = createBottomTabNavigator({
-  screens: {
-    Home: {
-      screen: Home,
-      options: {
-        title: 'Feed',
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={newspaper}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
-        ),
-      },
-    },
-    Updates: {
-      screen: Updates,
-      options: {
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={bell}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
-        ),
-      },
-    },
-  },
-});
+const Tab = createBottomTabNavigator();
 
-const RootStack = createNativeStackNavigator({
-  screens: {
-    HomeTabs: {
-      screen: HomeTabs,
-      options: {
-        title: 'Home',
+const HomeTabs = () => {
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
         headerShown: false,
-      },
-    },
-    Profile: {
-      screen: Profile,
-      linking: {
-        path: ':user(@[a-zA-Z0-9-_]+)',
-        parse: {
-          user: (value) => value.replace(/^@/, ''),
-        },
-        stringify: {
-          user: (value) => `@${value}`,
-        },
-      },
-    },
-    Settings: {
-      screen: Settings,
-      options: ({ navigation }) => ({
-        presentation: 'modal',
-        headerRight: () => (
-          <HeaderButton onPress={navigation.goBack}>
-            <Text>Close</Text>
-          </HeaderButton>
-        ),
-      }),
-    },
-    NotFound: {
-      screen: NotFound,
-      options: {
-        title: '404',
-      },
-      linking: {
-        path: '*',
-      },
-    },
-  },
-});
+      }}
+    >
+      <Tab.Screen
+        name={AppNavigatorPaths.Home}
+        component={Home}
+        options={{
+          title: 'Anasayfa',
+        }}
+      />
+      <Tab.Screen
+        name={AppNavigatorPaths.Favorites}
+        component={Favorites}
+        options={{
+          title: 'Favoriler',
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
-export const Navigation = createStaticNavigation(RootStack);
+const Stack = createNativeStackNavigator();
 
-type RootStackParamList = StaticParamList<typeof RootStack>;
+const RootStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen
+        name={AppNavigatorPaths.HomeTabs}
+        component={HomeTabs}
+        options={{
+          title: 'Home',
+        }}
+      />
+      <Stack.Screen
+        name={AppNavigatorPaths.Profile}
+        component={Profile}
+      />
+      <Stack.Screen
+        name={AppNavigatorPaths.Settings}
+        component={Settings}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name={AppNavigatorPaths.NotFound}
+        component={NotFound}
+        options={{
+          title: '404',
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const Navigation = () => {
+  return (
+    <NavigationContainer
+      linking={{
+        enabled: true,
+        prefixes: [
+          'helloworld://',
+        ],
+      }}
+    >
+      <RootStack />
+    </NavigationContainer>
+  );
+};
+
+export type RootStackParamList = {
+  HomeTabs: undefined;
+  Home: undefined;
+  Favorites: undefined;
+  Profile: { user?: string };
+  Settings: undefined;
+  NotFound: undefined;
+};
 
 declare global {
   namespace ReactNavigation {
