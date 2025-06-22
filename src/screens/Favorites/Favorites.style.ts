@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     },
     scrollContent: {
       paddingTop: 100, // Header height
+      paddingBottom: 120, // Space for transparent TabBar
     },
     content: {
       flex: 1,

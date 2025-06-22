@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
       flex: 1,
     },
     scrollContent: {
+      paddingBottom: 120,
     },
     content: {
       flex: 1,

@@ -87,7 +87,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             value={query}
             onChangeText={setQuery}
             placeholder={placeholder}
-            placeholderTextColor={colors.white}
+            placeholderTextColor={colors.darkGray}
             autoCapitalize="none"
             autoCorrect={false}
           />
