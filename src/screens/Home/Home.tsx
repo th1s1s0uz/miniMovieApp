@@ -1,40 +1,76 @@
-import { Text } from '@react-navigation/elements';
-import { View } from 'react-native';
+import React from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import AppNavigatorPaths from '../../navigation/AppNavigatorPaths';
-import { Button} from '../../components/Button/Button';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
+import { HomeContent } from '../../components/HomeContent/HomeContent';
+import { Movie } from '../../services/tmdbService';
+import { colors } from '../../constants/colors';
+import { useMovies } from '../../hooks/useMovies';
 import { styles } from './Home.style';
 
 export function Home() {
   const navigation = useAppNavigation<keyof typeof AppNavigatorPaths>();
+  const {
+    trendingMovies,
+    popularMovies,
+    nowPlayingMovies,
+    upcomingMovies,
+    topRatedMovies,
+    discoverMovies,
+    loading,
+    refreshing,
+    error,
+    onRefresh,
+  } = useMovies();
 
-  const goToProfile = () => {
-    navigation.navigate(AppNavigatorPaths.Profile, { user: 'jane' });
+  const handleMoviePress = (movie: Movie) => {
+    // TODO: Navigate to movie details screen
+    console.log('Movie pressed:', movie.title);
   };
 
-  const goToSettings = () => {
-    navigation.navigate(AppNavigatorPaths.Settings);
-  };
+  const renderLoading = () => (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={colors.green} />
+      <Text style={styles.loadingText}>Filmler yükleniyor...</Text>
+    </View>
+  );
+
+  const renderError = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>
+        {error || 'Henüz film bulunmuyor'}
+      </Text>
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <CustomHeader title="Mini Movie App" />
+        {renderLoading()}
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <CustomHeader title="Mini Movie App" />
-      
-      <View style={styles.content}>
-        <Text style={styles.title}>Mini Movie App</Text>
-        <Text style={styles.subtitle}>En güncel filmler ve diziler</Text>
-        <View style={styles.buttonContainer}>
-          <Button 
-            title="Profil" 
-            onPress={goToProfile}
-          />
-          <Button 
-            title="Ayarlar" 
-            onPress={goToSettings}
-          />
-        </View>
-      </View>
+      {error ? (
+        renderError()
+      ) : (
+        <HomeContent
+          trendingMovies={trendingMovies}
+          popularMovies={popularMovies}
+          nowPlayingMovies={nowPlayingMovies}
+          upcomingMovies={upcomingMovies}
+          topRatedMovies={topRatedMovies}
+          discoverMovies={discoverMovies}
+          onMoviePress={handleMoviePress}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      )}
     </View>
   );
 }
