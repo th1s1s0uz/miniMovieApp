@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
-  Animated
+  Animated,
+  FlatList
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
-import { Movie, tmdbService } from '../../services/tmdbService';
+import { Movie, tmdbService, MovieCredits } from '../../services/tmdbService';
 import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, formatBudget, formatRevenue, formatGenres, formatProductionCompanies, formatSpokenLanguages, formatProductionCountries } from '../../utils/movieUtils';
 import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
@@ -18,6 +19,7 @@ import { styles } from './MovieDetail.style';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFavorites } from '../../hooks/useFavorites';
 import { Button } from '../../components/Button/Button';
+import { CastMember } from '../../services/tmdbService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +29,7 @@ export function MovieDetail() {
   const { toggleFavoriteMovie, isFavorite } = useFavorites();
 
   const [movie, setMovie] = useState<Movie | null>(null);
+  const [credits, setCredits] = useState<MovieCredits | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const scrollY = new Animated.Value(0);
@@ -44,8 +47,12 @@ export function MovieDetail() {
     try {
       setLoading(true);
       setError(null);
-      const movieData = await tmdbService.getMovieDetails(movieId);
+      const [movieData, creditsData] = await Promise.all([
+        tmdbService.getMovieDetails(movieId),
+        tmdbService.getMovieCredits(movieId)
+      ]);
       setMovie(movieData);
+      setCredits(creditsData);
     } catch (err) {
       setError('Film detayları yüklenirken bir hata oluştu');
     } finally {
@@ -171,6 +178,42 @@ export function MovieDetail() {
                   </View>
                 ))}
               </View>
+            </View>
+          )}
+
+          {credits && credits.cast && credits.cast.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Oyuncular</Text>
+              <FlatList
+                data={credits.cast.slice(0, 20)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.castListContainer}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item: actor }) => (
+                  <View style={styles.castItem}>
+                    {actor.profile_path ? (
+                      <Image
+                        source={{
+                          uri: `https://image.tmdb.org/t/p/w92${actor.profile_path}`
+                        }}
+                        style={styles.castImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.castImagePlaceholder}>
+                        <Ionicons name="help-circle" size={32} color={colors.lightGray} />
+                      </View>
+                    )}
+                    <Text style={styles.castName} numberOfLines={2}>
+                      {actor.name}
+                    </Text>
+                    <Text style={styles.castCharacter} numberOfLines={1}>
+                      {actor.character}
+                    </Text>
+                  </View>
+                )}
+              />
             </View>
           )}
 
