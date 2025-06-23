@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './Favorites.style';
 import { colors } from '../../constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export function Favorites() {
   const mockFavorites = [
@@ -17,16 +18,25 @@ export function Favorites() {
 
   const removeFavorite = (id: number) => {
     // TODO: Implement remove from favorites
-    console.log('Remove favorite:', id);
   };
 
   return (
     <View style={styles.container}>
-      <CustomHeader 
-        title="Favori Filmler" 
+      <CustomHeader
+        title="Favori Filmler"
         scrollY={scrollY}
       />
-      
+      <LinearGradient
+        colors={[
+          '#1a3d6d', // Sağ alt: açık mavi
+          '#0d0d0d',   // Üst: siyah
+          '#0d0d0d',   // Orta: siyah
+        ]}
+        locations={[0, 0.3, 1]}
+        start={{ x: 1, y: 1 }}   // Sağ alt köşe
+        end={{ x: 0, y: 0 }}     // Sol üst köşe
+        style={styles.gradientBg}
+      />
       <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -40,7 +50,7 @@ export function Favorites() {
       >
         <View style={styles.content}>
           <Text style={styles.subtitle}>Favori filmleriniz burada görünecek</Text>
-          
+
           <View style={styles.favoritesList}>
             {mockFavorites.map((movie) => (
               <View key={movie.id} style={styles.movieItem}>
@@ -49,8 +59,8 @@ export function Favorites() {
                   <Text style={styles.movieYear}>{movie.year}</Text>
                   <Text style={styles.movieRating}>⭐ {movie.rating}</Text>
                 </View>
-                <TouchableOpacity 
-                  style={styles.removeButton} 
+                <TouchableOpacity
+                  style={styles.removeButton}
                   onPress={() => removeFavorite(movie.id)}
                 >
                   <Ionicons name="heart-dislike" size={20} color={colors.error} />

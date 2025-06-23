@@ -4,7 +4,7 @@ import { colors } from "../../constants/colors";
 export const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
-        backgroundColor: colors.black,
+        backgroundColor: 'transparent',
     },
     searchResultsContainer: {
         paddingTop: 100,

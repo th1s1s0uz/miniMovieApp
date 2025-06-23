@@ -67,4 +67,8 @@ export const styles = StyleSheet.create({
       borderRadius: 20,
       backgroundColor: colors.secondaryBlack,
     },
+    gradientBg: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 0,
+    },
   }); 

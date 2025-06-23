@@ -24,7 +24,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const currentSearchRef = useRef('');
 
   const debouncedSearch = useCallback((searchQuery: string) => {
-    console.log('🔍 Debounced search called with:', searchQuery);
     
     // Clear existing timeout
     if (timeoutRef.current) {
@@ -37,11 +36,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       
       // Prevent duplicate searches
       if (trimmedQuery === currentSearchRef.current) {
-        console.log('🔍 Skipping duplicate search:', trimmedQuery);
         return;
       }
       
-      console.log('🔍 Executing search:', trimmedQuery);
       currentSearchRef.current = trimmedQuery;
       onSearch(trimmedQuery || '');
     }, 500);
@@ -49,7 +46,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   // Effect to trigger search when query changes
   useEffect(() => {
-    console.log('🔍 Query changed to:', query);
     debouncedSearch(query);
     
     return () => {
@@ -60,7 +56,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   }, [query, debouncedSearch]);
 
   const handleClear = useCallback(() => {
-    console.log('🔍 Clearing search');
     setQuery('');
     currentSearchRef.current = '';
     if (timeoutRef.current) {

@@ -3,10 +3,6 @@ import { colors } from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   button: {
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 8,
-    minWidth: 120,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -14,6 +10,20 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconOnlyContainer: {
+    justifyContent: 'center',
+  },
+  leftIcon: {
+    marginRight: 8,
+  },
+  rightIcon: {
+    marginLeft: 8,
   },
   large: {
     paddingHorizontal: 40,

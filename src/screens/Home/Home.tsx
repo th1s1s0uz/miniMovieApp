@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, Animated, RefreshControl } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import AppNavigatorPaths from '../../navigation/AppNavigatorPaths';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
@@ -15,7 +16,7 @@ export function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const scrollY = new Animated.Value(0);
-  
+
   const {
     trendingMovies,
     popularMovies,
@@ -34,24 +35,19 @@ export function Home() {
   };
 
   const handleSearch = useCallback(async (query: string) => {
-    console.log('🎬 Home handleSearch called:', { query, timestamp: new Date().toISOString() });
-    
+
     if (!query.trim()) {
-      console.log('🎬 Clearing search results');
       setSearchResults([]);
       setHasSearched(false);
       return;
     }
 
-    console.log('🎬 Starting search for:', query);
     setIsSearching(true);
     try {
       const response = await tmdbService.searchMovies(query);
-      console.log('🎬 Search completed:', { query, resultsCount: response.results.length });
       setSearchResults(response.results);
       setHasSearched(true);
     } catch (error) {
-      console.error('🎬 Search error:', error);
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -123,7 +119,7 @@ export function Home() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <CustomHeader 
+        <CustomHeader
           showSearch={true}
           onSearch={handleSearch}
           onClearSearch={handleClearSearch}
@@ -137,7 +133,18 @@ export function Home() {
 
   return (
     <View style={styles.container}>
-      <CustomHeader 
+      <LinearGradient
+        colors={[
+          '#1a3d6d', // Sağ alt: açık mavi
+          '#0d0d0d',   // Üst: siyah
+          '#0d0d0d',   // Orta: siyah
+        ]}
+        locations={[0, 0.3, 1]}
+        start={{ x: 1, y: 1 }}   // Sağ alt köşe
+        end={{ x: 0, y: 0 }}     // Sol üst köşe
+        style={styles.gradientBg}
+      />
+      <CustomHeader
         showSearch={true}
         onSearch={handleSearch}
         onClearSearch={handleClearSearch}
@@ -156,7 +163,6 @@ export function Home() {
       ) : (
         <Animated.ScrollView
           style={styles.scrollView}
-          bounces={false}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event(

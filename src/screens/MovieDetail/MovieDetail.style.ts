@@ -248,4 +248,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 16,
   },
+  gradientBg: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
 }); 

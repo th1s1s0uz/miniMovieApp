@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
       flex: 1,
     },
     scrollContent: {
-      paddingBottom: 120,
+      paddingBottom: 60,
     },
     content: {
       flex: 1,
@@ -86,6 +86,10 @@ export const styles = StyleSheet.create({
       color: colors.darkGray,
       fontSize: 16,
       textAlign: 'center',
+    },
+    gradientBg: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 0,
     },
   });
   

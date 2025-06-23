@@ -35,7 +35,6 @@ export const useMovies = () => {
       setDiscoverMovies(discoverResponse.results);
     } catch (err) {
       setError('Filmler yüklenirken bir hata oluştu');
-      console.error('Error fetching movies:', err);
     } finally {
       setLoading(false);
     }

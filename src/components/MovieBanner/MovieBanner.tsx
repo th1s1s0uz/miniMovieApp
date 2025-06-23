@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Movie } from '../../services/tmdbService';
 import { getPosterUrl, formatRating } from '../../utils/movieUtils';
 import { colors } from '../../constants/colors';
 import { styles } from './MovieBanner.style';
+import { Button } from '../Button/Button';
 
 interface MovieBannerProps {
   movie: Movie;
@@ -36,10 +38,8 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
   };
 
   return (
-    <TouchableOpacity 
+    <View 
       style={styles.container} 
-      onPress={() => onPress(movie)}
-      activeOpacity={0.9}
     >
       <Image 
         source={{ uri: imageUrl }} 
@@ -47,33 +47,38 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
         resizeMode="cover"
       />
       
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.gradientOverlay}
+      />
+      
       <View style={styles.content}>
-        {/* Top Section - Action Buttons */}
         <View style={styles.topSection}>
           <View style={styles.actionButtons}>
-            <TouchableOpacity 
-              style={styles.actionButton}
+            <Button
+              title=""
               onPress={handleShare}
-              activeOpacity={0.8}
-            >
-              <Ionicons 
-                name="share-outline" 
-                size={20} 
-                color={colors.white} 
-              />
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
+              backgroundColor="rgba(0, 0, 0, 0.4)"
+              textColor={colors.white}
               style={styles.actionButton}
+              icon="share-outline"
+              iconSize={20}
+              iconColor={colors.white}
+            />
+            
+            <Button
+              title=""
               onPress={handleFavorite}
-              activeOpacity={0.8}
-            >
-              <Ionicons 
-                name={isFavorite ? "heart" : "heart-outline"} 
-                size={20} 
-                color={isFavorite ? colors.blue : colors.white} 
-              />
-            </TouchableOpacity>
+              backgroundColor="rgba(0, 0, 0, 0.4)"
+              textColor={colors.white}
+              style={styles.actionButton}
+              icon={isFavorite ? "heart" : "heart-outline"}
+              iconSize={20}
+              iconColor={isFavorite ? colors.blue : colors.white}
+            />
           </View>
         </View>
         
@@ -90,17 +95,23 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
                 {new Date(movie.release_date).getFullYear()}
               </Text>
             </View>
-            
-            <TouchableOpacity 
-              style={styles.exploreButton}
+            <Button
+              title="İncele"
               onPress={() => onPress(movie)}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.exploreButtonText}>İncele</Text>
-            </TouchableOpacity>
+              gradientColors={[colors.blue, '#2a8fd9', '#1a6bb8']}
+              gradientLocations={[0, 0.5, 1]}
+              gradientStart={{ x: 0, y: 0 }}
+              gradientEnd={{ x: 1, y: 0 }}
+              textColor={colors.white}
+              style={styles.exploreButton}
+              icon="play"
+              iconSize={18}
+              iconColor={colors.white}
+              iconPosition="left"
+            />
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };

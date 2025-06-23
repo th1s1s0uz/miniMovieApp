@@ -14,6 +14,7 @@ import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, 
 import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './MovieDetail.style';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,7 +44,6 @@ export function MovieDetail() {
       setMovie(movieData);
     } catch (err) {
       setError('Film detayları yüklenirken bir hata oluştu');
-      console.error('Error fetching movie details:', err);
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,6 @@ export function MovieDetail() {
         onBackPress={() => navigation.goBack()}
         scrollY={scrollY}
       />
-
       <Animated.ScrollView
         style={styles.scrollView}
         bounces={false}
