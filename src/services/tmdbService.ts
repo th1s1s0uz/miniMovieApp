@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useApi } from '../hooks/useApi';
 
 const API_KEY = '11d209aeff612e28d4e0758c52485b0e';
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -12,6 +13,55 @@ const tmdbApi = axios.create({
   },
   timeout: 10000, // 10 saniye timeout
 });
+
+// Request interceptor
+tmdbApi.interceptors.request.use(
+  (config) => {
+    // Request gönderilmeden önce yapılacak işlemler
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
+tmdbApi.interceptors.response.use(
+  (response) => {
+    // Başarılı response
+    return response;
+  },
+  (error) => {
+    // Error handling
+    if (error.response) {
+      // Server error (4xx, 5xx)
+      const status = error.response.status;
+      const message = error.response.data?.status_message || `HTTP ${status} hatası`;
+      
+      // Error objesini zenginleştir
+      error.statusCode = status;
+      error.errorMessage = message;
+      
+      // 401 hatası için özel handling
+      if (status === 401) {
+        error.errorMessage = 'API anahtarı geçersiz veya süresi dolmuş.';
+      }
+      
+      // 429 rate limit hatası için özel handling
+      if (status === 429) {
+        error.errorMessage = 'API istek limiti aşıldı. Lütfen biraz bekleyin.';
+      }
+    } else if (error.request) {
+      // Network error
+      error.errorMessage = 'Sunucuya bağlanılamıyor. İnternet bağlantınızı kontrol edin.';
+    } else {
+      // Diğer error'lar
+      error.errorMessage = error.message || 'Bilinmeyen bir hata oluştu.';
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 export interface Movie {
   id: number;
@@ -264,6 +314,19 @@ export const tmdbService = {
     }
   },
 
+  // Get similar movies
+  getSimilarMovies: async (movieId: number, page: number = 1): Promise<MoviesResponse> => {
+    try {
+      const response = await tmdbApi.get(`/movie/${movieId}/similar`, {
+        params: { page }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching similar movies:', error);
+      throw error;
+    }
+  },
+
   // Get person details (actor/actress information)
   getPersonDetails: async (personId: number): Promise<Person> => {
     try {
@@ -284,4 +347,84 @@ export const tmdbService = {
     if (!path) return '';
     return `https://image.tmdb.org/t/p/${size}${path}`;
   }
+};
+
+// Hook-based API functions
+export const useTmdbApi = {
+  // Popular movies hook
+  usePopularMovies: (page: number = 1) => {
+    return useApi(tmdbService.getPopularMovies, {
+      errorTitle: 'Popüler Filmler Yüklenemedi',
+    });
+  },
+
+  // Now playing movies hook
+  useNowPlayingMovies: (page: number = 1) => {
+    return useApi(tmdbService.getNowPlayingMovies, {
+      errorTitle: 'Vizyondaki Filmler Yüklenemedi',
+    });
+  },
+
+  // Top rated movies hook
+  useTopRatedMovies: (page: number = 1) => {
+    return useApi(tmdbService.getTopRatedMovies, {
+      errorTitle: 'En İyi Filmler Yüklenemedi',
+    });
+  },
+
+  // Upcoming movies hook
+  useUpcomingMovies: (page: number = 1) => {
+    return useApi(tmdbService.getUpcomingMovies, {
+      errorTitle: 'Yakında Gelecek Filmler Yüklenemedi',
+    });
+  },
+
+  // Trending movies hook
+  useTrendingMovies: (page: number = 1) => {
+    return useApi(tmdbService.getTrendingMovies, {
+      errorTitle: 'Trend Filmler Yüklenemedi',
+    });
+  },
+
+  // Discover movies hook
+  useDiscoverMovies: (page: number = 1, sortBy: string = 'popularity.desc') => {
+    return useApi(tmdbService.getDiscoverMovies, {
+      errorTitle: 'Film Keşfi Yüklenemedi',
+    });
+  },
+
+  // Search movies hook
+  useSearchMovies: () => {
+    return useApi(tmdbService.searchMovies, {
+      errorTitle: 'Film Arama Başarısız',
+    });
+  },
+
+  // Movie details hook
+  useMovieDetails: () => {
+    return useApi(tmdbService.getMovieDetails, {
+      errorTitle: 'Film Detayları Yüklenemedi',
+    });
+  },
+
+  // Movie credits hook
+  useMovieCredits: () => {
+    return useApi(tmdbService.getMovieCredits, {
+      errorTitle: 'Oyuncu Bilgileri Yüklenemedi',
+    });
+  },
+
+  // Similar movies hook
+  useSimilarMovies: () => {
+    return useApi(tmdbService.getSimilarMovies, {
+      errorTitle: 'Benzer Filmler Yüklenemedi',
+    });
+  },
+
+  // Person details hook
+  usePersonDetails: () => {
+    return useApi(tmdbService.getPersonDetails, {
+      errorTitle: 'Oyuncu Detayları Yüklenemedi',
+    });
+  },
 }; 

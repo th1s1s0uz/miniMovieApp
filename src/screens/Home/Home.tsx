@@ -5,7 +5,7 @@ import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import AppNavigatorPaths from '../../navigation/AppNavigatorPaths';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { HomeContent } from '../../components/HomeContent/HomeContent';
-import { Movie, tmdbService } from '../../services/tmdbService';
+import { Movie, useTmdbApi } from '../../services/tmdbService';
 import { colors } from '../../constants/colors';
 import { useMovies } from '../../hooks/useMovies';
 import { useAppDispatch } from '../../store/hooks';
@@ -33,6 +33,9 @@ export function Home() {
     onRefresh,
   } = useMovies();
 
+  // Search API hook
+  const searchApi = useTmdbApi.useSearchMovies();
+
   // Load favorites from storage when component mounts
   useEffect(() => {
     dispatch(loadFavorites());
@@ -43,7 +46,6 @@ export function Home() {
   };
 
   const handleSearch = useCallback(async (query: string) => {
-
     if (!query.trim()) {
       setSearchResults([]);
       setHasSearched(false);
@@ -52,20 +54,27 @@ export function Home() {
 
     setIsSearching(true);
     try {
-      const response = await tmdbService.searchMovies(query);
-      setSearchResults(response.results);
+      const result = await searchApi.execute(query, 1);
+      if (result) {
+        setSearchResults(result.results);
+        setHasSearched(true);
+      } else {
+        setSearchResults([]);
       setHasSearched(true);
+      }
     } catch (error) {
       setSearchResults([]);
+      setHasSearched(true);
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [searchApi]);
 
   const handleClearSearch = useCallback(() => {
     setSearchResults([]);
     setHasSearched(false);
-  }, []);
+    searchApi.reset();
+  }, [searchApi]);
 
   const renderLoading = () => (
     <View style={styles.loadingContainer}>

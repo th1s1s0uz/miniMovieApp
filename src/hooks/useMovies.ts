@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Movie, tmdbService } from '../services/tmdbService';
+import { Movie, useTmdbApi } from '../services/tmdbService';
 
 export const useMovies = () => {
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
@@ -13,26 +13,41 @@ export const useMovies = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // API hooks
+  const popularApi = useTmdbApi.usePopularMovies(1);
+  const nowPlayingApi = useTmdbApi.useNowPlayingMovies(1);
+  const topRatedApi = useTmdbApi.useTopRatedMovies(1);
+  const trendingApi = useTmdbApi.useTrendingMovies(1);
+  const upcomingApi = useTmdbApi.useUpcomingMovies(1);
+  const discoverApi = useTmdbApi.useDiscoverMovies(1, 'vote_average.desc');
+
   const fetchAllMovies = async () => {
     try {
       setError(null);
       
-      // Fetch all movie categories in parallel
-      const [popularResponse, nowPlayingResponse, topRatedResponse, trendingResponse, upcomingResponse, discoverResponse] = await Promise.all([
-        tmdbService.getPopularMovies(1),
-        tmdbService.getNowPlayingMovies(1),
-        tmdbService.getTopRatedMovies(1),
-        tmdbService.getTrendingMovies(1),
-        tmdbService.getUpcomingMovies(1),
-        tmdbService.getDiscoverMovies(1, 'vote_average.desc')
+      // Fetch all movie categories in parallel using the new API hooks
+      const [popularResult, nowPlayingResult, topRatedResult, trendingResult, upcomingResult, discoverResult] = await Promise.all([
+        popularApi.execute(1),
+        nowPlayingApi.execute(1),
+        topRatedApi.execute(1),
+        trendingApi.execute(1),
+        upcomingApi.execute(1),
+        discoverApi.execute(1, 'vote_average.desc')
       ]);
       
-      setPopularMovies(popularResponse.results);
-      setNowPlayingMovies(nowPlayingResponse.results);
-      setTopRatedMovies(topRatedResponse.results);
-      setTrendingMovies(trendingResponse.results);
-      setUpcomingMovies(upcomingResponse.results);
-      setDiscoverMovies(discoverResponse.results);
+      // Update state with results
+      if (popularResult) setPopularMovies(popularResult.results);
+      if (nowPlayingResult) setNowPlayingMovies(nowPlayingResult.results);
+      if (topRatedResult) setTopRatedMovies(topRatedResult.results);
+      if (trendingResult) setTrendingMovies(trendingResult.results);
+      if (upcomingResult) setUpcomingMovies(upcomingResult.results);
+      if (discoverResult) setDiscoverMovies(discoverResult.results);
+      
+      // Check if any API calls failed
+      const failedCalls = [popularResult, nowPlayingResult, topRatedResult, trendingResult, upcomingResult, discoverResult].filter(result => !result);
+      if (failedCalls.length > 0) {
+        setError('Bazı film kategorileri yüklenemedi');
+      }
     } catch (err) {
       setError('Filmler yüklenirken bir hata oluştu');
     } finally {
@@ -50,6 +65,12 @@ export const useMovies = () => {
     fetchAllMovies();
   }, []);
 
+  // Combine loading states from all API hooks
+  const isLoading = loading || popularApi.loading || nowPlayingApi.loading || topRatedApi.loading || trendingApi.loading || upcomingApi.loading || discoverApi.loading;
+  
+  // Combine error states from all API hooks
+  const combinedError = error || popularApi.error || nowPlayingApi.error || topRatedApi.error || trendingApi.error || upcomingApi.error || discoverApi.error;
+
   return {
     // Movie data
     trendingMovies,
@@ -60,9 +81,9 @@ export const useMovies = () => {
     discoverMovies,
     
     // Loading states
-    loading,
+    loading: isLoading,
     refreshing,
-    error,
+    error: combinedError,
     
     // Actions
     onRefresh,

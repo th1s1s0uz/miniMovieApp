@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
 import CustomBottomSheet from '../BottomSheet/BottomSheet';
 import { colors } from '../../constants/colors';
-import { CastMember, Person, tmdbService } from '../../services/tmdbService';
+import { CastMember, useTmdbApi } from '../../services/tmdbService';
 import { styles } from './CastBottomSheet.style';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 
 interface CastBottomSheetProps {
   isVisible: boolean;
@@ -19,8 +20,11 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
   selectedCastMember,
   movieTitle,
 }) => {
-  const [personDetails, setPersonDetails] = React.useState<Person | null>(null);
-  const [loadingPerson, setLoadingPerson] = React.useState(false);
+  const [personDetails, setPersonDetails] = React.useState<any>(null);
+  const navigation = useAppNavigation<'MovieDetail'>();
+
+  // API hook for person details
+  const personDetailsApi = useTmdbApi.usePersonDetails();
 
   const getImageUrl = (path?: string) => {
     if (!path) return null;
@@ -28,19 +32,21 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
   };
 
   React.useEffect(() => {
-    if (selectedCastMember) {
+    if (selectedCastMember && isVisible) {
+      // Reset person details when a new cast member is selected
+      setPersonDetails(null);
       fetchPersonDetails(selectedCastMember.id);
     }
-  }, [selectedCastMember]);
+  }, [selectedCastMember?.id, isVisible]);
 
   const fetchPersonDetails = async (personId: number) => {
     try {
-      setLoadingPerson(true);
-      const details = await tmdbService.getPersonDetails(personId);
-      setPersonDetails(details);
+      const details = await personDetailsApi.execute(personId);
+      if (details) {
+        setPersonDetails(details);
+      }
     } catch (error) {
-    } finally {
-      setLoadingPerson(false);
+      console.error('Error fetching person details:', error);
     }
   };
 
@@ -49,10 +55,21 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
     return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
-  
+  const handleMoviePress = (movie: any) => {
+    // Close the bottom sheet first
+    onClose();
+    // Navigate to movie detail after a short delay to allow bottom sheet to close
+    setTimeout(() => {
+      navigation.navigate('MovieDetail', { movieId: movie.id });
+    }, 300);
+  };
 
   const renderMovieItem = ({ item: movie }: { item: any }) => (
-    <View style={styles.movieItem}>
+    <TouchableOpacity 
+      style={styles.movieItem}
+      onPress={() => handleMoviePress(movie)}
+      activeOpacity={0.7}
+    >
       {movie.poster_path ? (
         <Image
           source={{ uri: `https://image.tmdb.org/t/p/w154${movie.poster_path}` }}
@@ -77,12 +94,12 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
           {movie.release_date ? new Date(movie.release_date).getFullYear() : 'Tarih yok'}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderCastMemberDetails = () => (
     <View style={styles.container}>
-      {loadingPerson ? (
+      {personDetailsApi.loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.blue} />
           <Text style={styles.loadingText}>Oyuncu bilgileri yükleniyor...</Text>

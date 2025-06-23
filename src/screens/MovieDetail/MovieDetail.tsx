@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
+import { 
+  View, 
+  Text, 
+  Image, 
+  TouchableOpacity, 
   ActivityIndicator,
   Animated,
   FlatList
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
-import { Movie, tmdbService, MovieCredits } from '../../services/tmdbService';
+import { Movie, useTmdbApi, MovieCredits } from '../../services/tmdbService';
 import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, formatBudget, formatRevenue, formatGenres, formatProductionCompanies, formatSpokenLanguages, formatProductionCountries } from '../../utils/movieUtils';
 import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
@@ -19,44 +19,49 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { Button } from '../../components/Button/Button';
 import { CastMember } from '../../services/tmdbService';
 import CastBottomSheet from '../../components/CastBottomSheet/CastBottomSheet';
-
+import { MovieCard } from '../../components/MovieCard/MovieCard';
+import { CastCard } from '../../components/CastCard/CastCard';
 
 export function MovieDetail() {
   const navigation = useAppNavigation<'MovieDetail'>();
   const movieId = (navigation.getState().routes.find(route => route.name === 'MovieDetail')?.params as any)?.movieId;
   const { toggleFavoriteMovie, isFavorite } = useFavorites();
-
+  
   const [movie, setMovie] = useState<Movie | null>(null);
   const [credits, setCredits] = useState<MovieCredits | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [isCastBottomSheetVisible, setIsCastBottomSheetVisible] = useState(false);
   const [selectedCastMember, setSelectedCastMember] = useState<CastMember | null>(null);
   const scrollY = new Animated.Value(0);
 
+  // API hooks
+  const movieDetailsApi = useTmdbApi.useMovieDetails();
+  const movieCreditsApi = useTmdbApi.useMovieCredits();
+  const similarMoviesApi = useTmdbApi.useSimilarMovies();
+
   useEffect(() => {
     if (movieId) {
       fetchMovieDetails();
-    } else {
-      setError('Film ID bulunamadı');
-      setLoading(false);
     }
   }, [movieId]);
 
   const fetchMovieDetails = async () => {
+    if (!movieId) return;
+
     try {
-      setLoading(true);
-      setError(null);
-      const [movieData, creditsData] = await Promise.all([
-        tmdbService.getMovieDetails(movieId),
-        tmdbService.getMovieCredits(movieId)
+      // Fetch all movie data in parallel
+      const [movieData, creditsData, similarData] = await Promise.all([
+        movieDetailsApi.execute(movieId),
+        movieCreditsApi.execute(movieId),
+        similarMoviesApi.execute(movieId)
       ]);
-      setMovie(movieData);
-      setCredits(creditsData);
+
+      if (movieData) setMovie(movieData);
+      if (creditsData) setCredits(creditsData);
+      if (similarData) setSimilarMovies(similarData.results);
     } catch (err) {
-      setError('Film detayları yüklenirken bir hata oluştu');
-    } finally {
-      setLoading(false);
+      // Error handling is managed by the useApi hook
+      console.error('Error in fetchMovieDetails:', err);
     }
   };
 
@@ -71,7 +76,22 @@ export function MovieDetail() {
     setSelectedCastMember(null);
   };
 
-  if (loading) {
+  const handleSimilarMoviePress = (similarMovie: Movie) => {
+    navigation.replace('MovieDetail', { movieId: similarMovie.id });
+  };
+
+  const handleCastPress = (actor: CastMember) => {
+    setSelectedCastMember(actor);
+    setIsCastBottomSheetVisible(true);
+  };
+
+  // Combine loading states
+  const isLoading = movieDetailsApi.loading || movieCreditsApi.loading || similarMoviesApi.loading;
+  
+  // Combine error states
+  const error = movieDetailsApi.error || movieCreditsApi.error || similarMoviesApi.error;
+
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.blue} />
@@ -97,8 +117,8 @@ export function MovieDetail() {
 
   return (
     <View style={styles.container}>
-      <CustomHeader
-        title={movie.title || 'Film Detayı'}
+      <CustomHeader 
+        title={movie.title || 'Film Detayı'} 
         showBackButton={true}
         onBackPress={() => navigation.goBack()}
         scrollY={scrollY}
@@ -115,9 +135,9 @@ export function MovieDetail() {
         scrollEventThrottle={8}
       >
         <View style={styles.heroSection}>
-          <Image
-            source={{
-              uri: movie.backdrop_path
+          <Image 
+            source={{ 
+              uri: movie.backdrop_path 
                 ? getBackdropUrl(movie.backdrop_path, 'w780', '780x439')
                 : 'https://via.placeholder.com/780x439/666666/ffffff?text=Resim+Yok'
             }}
@@ -127,9 +147,9 @@ export function MovieDetail() {
           
           <View style={styles.heroOverlay}>
             <View style={styles.heroContent}>
-              <Image
-                source={{
-                  uri: movie.poster_path
+              <Image 
+                source={{ 
+                  uri: movie.poster_path 
                     ? getPosterUrl(movie.poster_path, 'w342', '342x513')
                     : 'https://via.placeholder.com/342x513/666666/ffffff?text=Poster+Yok'
                 }}
@@ -158,7 +178,7 @@ export function MovieDetail() {
           {movie.overview && movie.overview.trim() !== '' && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Özet</Text>
+              <Text style={styles.sectionTitle}>Özet</Text>
                 <Button
                   title=""
                   onPress={handleFavoritePress}
@@ -196,34 +216,10 @@ export function MovieDetail() {
                 contentContainerStyle={styles.castListContainer}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item: actor }) => (
-                  <TouchableOpacity 
-                    style={styles.castItem}
-                    onPress={() => {
-                      setSelectedCastMember(actor);
-                      setIsCastBottomSheetVisible(true);
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    {actor.profile_path ? (
-                      <Image
-                        source={{
-                          uri: `https://image.tmdb.org/t/p/w92${actor.profile_path}`
-                        }}
-                        style={styles.castImage}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View style={styles.castImagePlaceholder}>
-                        <Ionicons name="help-circle" size={32} color={colors.lightGray} />
-                      </View>
-                    )}
-                    <Text style={styles.castName} numberOfLines={2}>
-                      {actor.name}
-                    </Text>
-                    <Text style={styles.castCharacter} numberOfLines={1}>
-                      {actor.character}
-                    </Text>
-                  </TouchableOpacity>
+                  <CastCard
+                    actor={actor}
+                    onPress={handleCastPress}
+                  />
                 )}
               />
             </View>
@@ -251,56 +247,56 @@ export function MovieDetail() {
                 <Text style={styles.detailValue}>{formatRuntime(movie.runtime)}</Text>
               </View>
             )}
-
+            
             {movie.budget && movie.budget > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Bütçe</Text>
                 <Text style={styles.detailValue}>{formatBudget(movie.budget)}</Text>
               </View>
             )}
-
+            
             {movie.revenue && movie.revenue > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Gelir</Text>
                 <Text style={styles.detailValue}>{formatRevenue(movie.revenue)}</Text>
               </View>
             )}
-
+            
             {movie.status && movie.status.trim() !== '' && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Durum</Text>
                 <Text style={styles.detailValue}>{movie.status}</Text>
               </View>
             )}
-
+            
             {movie.original_language && movie.original_language.trim() !== '' && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Orijinal Dil</Text>
                 <Text style={styles.detailValue}>{movie.original_language.toUpperCase()}</Text>
               </View>
             )}
-
+            
             {movie.spoken_languages && movie.spoken_languages.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Konuşulan Diller</Text>
                 <Text style={styles.detailValue}>{formatSpokenLanguages(movie.spoken_languages)}</Text>
               </View>
             )}
-
+            
             {movie.production_countries && movie.production_countries.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Üretim Ülkeleri</Text>
                 <Text style={styles.detailValue}>{formatProductionCountries(movie.production_countries)}</Text>
               </View>
             )}
-
+            
             {movie.production_companies && movie.production_companies.length > 0 && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Üretim Şirketleri</Text>
                 <Text style={styles.detailValue}>{formatProductionCompanies(movie.production_companies)}</Text>
               </View>
             )}
-
+            
             {movie.imdb_id && movie.imdb_id.trim() !== '' && (
               <View style={[styles.detailRow, styles.detailRowLast]}>
                 <Text style={styles.detailLabel}>IMDB ID</Text>
@@ -308,6 +304,26 @@ export function MovieDetail() {
               </View>
             )}
           </View>
+          {similarMovies && similarMovies.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Benzer Filmler</Text>
+              <FlatList
+                data={similarMovies.slice(0, 10)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.similarMoviesContainer}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item: similarMovie }) => (
+                  <View style={styles.similarMovieItem}>
+                    <MovieCard
+                      movie={similarMovie}
+                      onPress={handleSimilarMoviePress}
+                    />
+                  </View>
+                )}
+              />
+            </View>
+          )}
         </View>
       </Animated.ScrollView>
       {isCastBottomSheetVisible && selectedCastMember && (
