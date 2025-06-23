@@ -7,6 +7,7 @@ import { getPosterUrl, formatRating } from '../../utils/movieUtils';
 import { colors } from '../../constants/colors';
 import { styles } from './MovieBanner.style';
 import { Button } from '../Button/Button';
+import { useFavorites } from '../../hooks/useFavorites';
 
 interface MovieBannerProps {
   movie: Movie;
@@ -21,8 +22,9 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
   onPress, 
   onShare, 
   onFavorite, 
-  isFavorite = false 
+  isFavorite: propIsFavorite = false 
 }) => {
+  const { toggleFavoriteMovie, isFavorite } = useFavorites();
   const imageUrl = getPosterUrl(movie.poster_path, 'w500', '500x750');
 
   const handleShare = () => {
@@ -32,10 +34,14 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
   };
 
   const handleFavorite = () => {
+    toggleFavoriteMovie(movie);
     if (onFavorite) {
       onFavorite(movie);
     }
   };
+
+  // Use Redux state if no prop is provided, otherwise use prop
+  const isMovieFavorite = propIsFavorite !== false ? propIsFavorite : isFavorite(movie.id);
 
   return (
     <View 
@@ -75,9 +81,9 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
               backgroundColor="rgba(0, 0, 0, 0.4)"
               textColor={colors.white}
               style={styles.actionButton}
-              icon={isFavorite ? "heart" : "heart-outline"}
+              icon={isMovieFavorite ? "heart" : "heart-outline"}
               iconSize={20}
-              iconColor={isFavorite ? colors.blue : colors.white}
+              iconColor={isMovieFavorite ? colors.blue : colors.white}
             />
           </View>
         </View>

@@ -2,15 +2,15 @@ import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../constants/colors";
 
 const { width } = Dimensions.get('window');
-const cardWidth = (width - 48) / 2; // 2 sütun, 16px margin her yanda
+const cardWidth = (width - 32) / 2; // 2 sütun, 8px margin her yanda
 
 export const styles = StyleSheet.create({
     container: {
         width: cardWidth,
         backgroundColor: 'transparent',
         overflow: 'hidden',
-        marginHorizontal: 8,
-        marginVertical: 12,
+        marginHorizontal: 4,
+        marginVertical: 8,
         borderRadius: 24,
         shadowColor: colors.shadowDark,
         shadowOffset: {
@@ -119,5 +119,24 @@ export const styles = StyleSheet.create({
         transform: [{ scale: 0.98 }],
         elevation: 12,
         shadowOpacity: 0.4,
+    },
+    iconContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 32,
+        height: 32,
+    },
+    favoriteButton: {
+        position: 'absolute',
+        top: 12,
+        left: 12,
+        borderRadius: 20,
+        zIndex: 10,
+    },
+    tabLabel: {
+        color: colors.blue,
+        fontSize: 10,
+        fontWeight: '600'
     },
 }); 

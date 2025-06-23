@@ -8,6 +8,7 @@ import {
   Dimensions,
   Animated
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import { Movie, tmdbService } from '../../services/tmdbService';
 import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, formatBudget, formatRevenue, formatGenres, formatProductionCompanies, formatSpokenLanguages, formatProductionCountries } from '../../utils/movieUtils';
@@ -15,12 +16,15 @@ import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './MovieDetail.style';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFavorites } from '../../hooks/useFavorites';
+import { Button } from '../../components/Button/Button';
 
 const { width, height } = Dimensions.get('window');
 
 export function MovieDetail() {
   const navigation = useAppNavigation<'MovieDetail'>();
   const movieId = (navigation.getState().routes.find(route => route.name === 'MovieDetail')?.params as any)?.movieId;
+  const { toggleFavoriteMovie, isFavorite } = useFavorites();
 
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +53,12 @@ export function MovieDetail() {
     }
   };
 
+  const handleFavoritePress = () => {
+    if (movie) {
+      toggleFavoriteMovie(movie);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -70,6 +80,8 @@ export function MovieDetail() {
       </View>
     );
   }
+
+  const isMovieFavorite = isFavorite(movie.id);
 
   return (
     <View style={styles.container}>
@@ -100,6 +112,7 @@ export function MovieDetail() {
             style={styles.backdropImage}
             resizeMode="cover"
           />
+          
           <View style={styles.heroOverlay}>
             <View style={styles.heroContent}>
               <Image
@@ -132,7 +145,18 @@ export function MovieDetail() {
 
           {movie.overview && movie.overview.trim() !== '' && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Özet</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Özet</Text>
+                <Button
+                  title=""
+                  onPress={handleFavoritePress}
+                  icon={isMovieFavorite ? "heart" : "heart-outline"}
+                  iconSize={24}
+                  iconColor={isMovieFavorite ? colors.blue : colors.white}
+                  backgroundColor="rgba(0, 0, 0, 0.6)"
+                  style={styles.overviewFavoriteButton}
+                />
+              </View>
               <Text style={styles.overviewText}>{movie.overview}</Text>
             </View>
           )}

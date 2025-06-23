@@ -4,7 +4,9 @@ import { Asset } from 'expo-asset';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
+import { Provider } from 'react-redux';
 import { Navigation } from './navigation';
+import { store } from './store';
 
 Asset.loadAsync([
   ...NavigationAssets,
@@ -22,6 +24,8 @@ export function App() {
   }, []);
 
   return (
-    <Navigation />
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
   );
 }

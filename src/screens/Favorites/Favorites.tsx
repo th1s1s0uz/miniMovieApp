@@ -1,24 +1,41 @@
+import React from 'react';
 import { Text } from '@react-navigation/elements';
-import { View, TouchableOpacity, Animated } from 'react-native';
+import { View, TouchableOpacity, Animated, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './Favorites.style';
 import { colors } from '../../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
+import { MovieCard } from '../../components/MovieCard/MovieCard';
+import { Movie } from '../../services/tmdbService';
 
 export function Favorites() {
-  const mockFavorites = [
-    { id: 1, title: 'Inception', year: 2010, rating: 8.8 },
-    { id: 2, title: 'The Dark Knight', year: 2008, rating: 9.0 },
-    { id: 3, title: 'Interstellar', year: 2014, rating: 8.6 },
-    { id: 4, title: 'Pulp Fiction', year: 1994, rating: 8.9 },
-  ];
-
+  const navigation = useAppNavigation();
+  const { favorites } = useFavorites();
   const scrollY = new Animated.Value(0);
 
-  const removeFavorite = (id: number) => {
-    // TODO: Implement remove from favorites
+  const handleMoviePress = (movie: Movie) => {
+    navigation.navigate('MovieDetail', { movieId: movie.id });
   };
+
+  const renderMovieCard = ({ item }: { item: Movie }) => (
+    <MovieCard
+      movie={item}
+      onPress={handleMoviePress}
+    />
+  );
+
+  const renderEmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <Ionicons name="heart-outline" size={64} color={colors.lightText} />
+      <Text style={styles.emptyTitle}>Henüz favori filminiz yok</Text>
+      <Text style={styles.emptySubtitle}>
+        Filmleri beğenmek için kalp ikonuna tıklayın
+      </Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -49,25 +66,21 @@ export function Favorites() {
         scrollEventThrottle={8}
       >
         <View style={styles.content}>
-          <Text style={styles.subtitle}>Favori filmleriniz burada görünecek</Text>
-
-          <View style={styles.favoritesList}>
-            {mockFavorites.map((movie) => (
-              <View key={movie.id} style={styles.movieItem}>
-                <View style={styles.movieInfo}>
-                  <Text style={styles.movieTitle}>{movie.title}</Text>
-                  <Text style={styles.movieYear}>{movie.year}</Text>
-                  <Text style={styles.movieRating}>⭐ {movie.rating}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.removeButton}
-                  onPress={() => removeFavorite(movie.id)}
-                >
-                  <Ionicons name="heart-dislike" size={20} color={colors.error} />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+          {favorites.length > 0 ? (
+            <>
+              <FlatList
+                data={favorites}
+                renderItem={renderMovieCard}
+                keyExtractor={(item) => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={styles.movieRow}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+              />
+            </>
+          ) : (
+            renderEmptyState()
+          )}
         </View>
       </Animated.ScrollView>
     </View>

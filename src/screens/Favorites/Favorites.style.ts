@@ -11,11 +11,11 @@ export const styles = StyleSheet.create({
     },
     scrollContent: {
       paddingTop: 100, // Header height
-      paddingBottom: 120, // Space for transparent TabBar
+      paddingBottom: 60, // Space for transparent TabBar
     },
     content: {
       flex: 1,
-      padding: 20,
+      padding: 12,
     },
     subtitle: {
       fontSize: 16,
@@ -24,25 +24,8 @@ export const styles = StyleSheet.create({
       marginTop: 8,
       marginBottom: 30,
     },
-    favoritesList: {
-      flex: 1,
-    },
-    movieItem: {
-      backgroundColor: colors.black,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 12,
-      flexDirection: 'row',
-      alignItems: 'center',
-      shadowColor: colors.shadow,
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.1,
-      shadowRadius: 3.84,
-      elevation: 5,
-    },
+ 
+   
     movieInfo: {
       flex: 1,
     },
@@ -66,6 +49,29 @@ export const styles = StyleSheet.create({
       padding: 8,
       borderRadius: 20,
       backgroundColor: colors.secondaryBlack,
+    },
+    movieRow: {
+      justifyContent: 'space-between',
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 60,
+    },
+    emptyTitle: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.white,
+      marginTop: 16,
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: colors.lightText,
+      textAlign: 'center',
+      lineHeight: 20,
     },
     gradientBg: {
       ...StyleSheet.absoluteFillObject,

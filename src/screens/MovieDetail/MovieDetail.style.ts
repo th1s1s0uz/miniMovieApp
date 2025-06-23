@@ -55,6 +55,17 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  favoriteButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
   heroOverlay: {
     position: 'absolute',
     top: 0,
@@ -127,12 +138,23 @@ export const styles = StyleSheet.create({
   section: {
     marginBottom: 32,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   sectionTitle: {
     color: colors.white,
     fontSize: 24,
     fontWeight: '800',
-    marginBottom: 20,
     letterSpacing: -0.5,
+  },
+  overviewFavoriteButton: {
+    borderRadius: 50,
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   overviewText: {
     color: colors.lightGray,

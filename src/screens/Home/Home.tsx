@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ActivityIndicator, Animated, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
@@ -8,10 +8,13 @@ import { HomeContent } from '../../components/HomeContent/HomeContent';
 import { Movie, tmdbService } from '../../services/tmdbService';
 import { colors } from '../../constants/colors';
 import { useMovies } from '../../hooks/useMovies';
+import { useAppDispatch } from '../../store/hooks';
+import { loadFavorites } from '../../store/favoritesThunks';
 import { styles } from './Home.style';
 
 export function Home() {
   const navigation = useAppNavigation<keyof typeof AppNavigatorPaths>();
+  const dispatch = useAppDispatch();
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -29,6 +32,11 @@ export function Home() {
     error,
     onRefresh,
   } = useMovies();
+
+  // Load favorites from storage when component mounts
+  useEffect(() => {
+    dispatch(loadFavorites());
+  }, [dispatch]);
 
   const handleMoviePress = (movie: Movie) => {
     navigation.navigate('MovieDetail', { movieId: movie.id });

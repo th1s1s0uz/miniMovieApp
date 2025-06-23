@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Movie } from '../../services/tmdbService';
-import { formatRating, formatDate, getPosterUrl } from '../../utils/movieUtils';
+import { formatRating, getPosterUrl } from '../../utils/movieUtils';
+import { colors } from '../../constants/colors';
+import { useFavorites } from '../../hooks/useFavorites';
 import { styles } from './MovieCard.style';
+import { Button } from '../Button/Button';
 
 interface MovieCardProps {
     movie: Movie;
@@ -12,6 +15,7 @@ interface MovieCardProps {
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
     const [isPressed, setIsPressed] = useState(false);
     const scaleAnim = useState(new Animated.Value(1))[0];
+    const { toggleFavoriteMovie, isFavorite } = useFavorites();
 
     const handlePress = () => {
         if (onPress) {
@@ -35,6 +39,12 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
         }).start();
     };
 
+    const handleFavoritePress = () => {
+        toggleFavoriteMovie(movie);
+    };
+
+    const isMovieFavorite = isFavorite(movie.id);
+
     return (
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
             <TouchableOpacity
@@ -53,6 +63,16 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
                         resizeMode="cover"
                     />
                     <View style={styles.glassOverlay} />
+                    <Button
+                        title=""
+                        onPress={handleFavoritePress}
+                        icon={isMovieFavorite ? "heart" : "heart-outline"}
+                        iconSize={20}
+                        iconColor={isMovieFavorite ? colors.blue : colors.white}
+                        backgroundColor="rgba(0, 0, 0, 0.6)"
+                        style={styles.favoriteButton}
+                    />
+                    
                     <View style={styles.ratingContainer}>
                         <Text style={styles.ratingText}>★ {formatRating(movie.vote_average)}</Text>
                     </View>
