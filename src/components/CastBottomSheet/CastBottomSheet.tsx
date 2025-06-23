@@ -91,7 +91,7 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
         <>
           <View style={styles.castHeader}>
             <LinearGradient
-              colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)', 'rgba(255,255,255,0.02)']}
+              colors={colors.bottomSheetGradient}
               style={styles.castHeaderGradient}
             >
               <View style={styles.avatarContainer}>
@@ -123,7 +123,7 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
           
           <View style={styles.detailsContainer}>
             <LinearGradient
-              colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.02)']}
+              colors={colors.bottomSheetGradient}
               style={styles.detailsGradient}
             >
               {personDetails.biography && (

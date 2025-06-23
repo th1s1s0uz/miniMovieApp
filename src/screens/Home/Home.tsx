@@ -142,14 +142,10 @@ export function Home() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[
-          '#1a3d6d', // Sağ alt: açık mavi
-          '#0d0d0d',   // Üst: siyah
-          '#0d0d0d',   // Orta: siyah
-        ]}
+        colors={colors.gradientBg}
         locations={[0, 0.3, 1]}
-        start={{ x: 1, y: 1 }}   // Sağ alt köşe
-        end={{ x: 0, y: 0 }}     // Sol üst köşe
+        start={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 0 }}
         style={styles.gradientBg}
       />
       <CustomHeader

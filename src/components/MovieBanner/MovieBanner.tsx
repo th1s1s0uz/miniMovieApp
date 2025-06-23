@@ -40,7 +40,6 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
     }
   };
 
-  // Use Redux state if no prop is provided, otherwise use prop
   const isMovieFavorite = propIsFavorite !== false ? propIsFavorite : isFavorite(movie.id);
 
   return (
@@ -54,7 +53,7 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
       />
       
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
+        colors={['transparent', colors.rgbaBg4, colors.rgbaBg8]}
         locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -67,7 +66,7 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
             <Button
               title=""
               onPress={handleShare}
-              backgroundColor="rgba(0, 0, 0, 0.4)"
+              backgroundColor={colors.rgbaBg4}
               textColor={colors.white}
               style={styles.actionButton}
               icon="share-outline"
@@ -78,7 +77,7 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
             <Button
               title=""
               onPress={handleFavorite}
-              backgroundColor="rgba(0, 0, 0, 0.4)"
+              backgroundColor={colors.rgbaBg4}
               textColor={colors.white}
               style={styles.actionButton}
               icon={isMovieFavorite ? "heart" : "heart-outline"}

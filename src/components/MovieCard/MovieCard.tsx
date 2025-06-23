@@ -69,7 +69,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
                         icon={isMovieFavorite ? "heart" : "heart-outline"}
                         iconSize={20}
                         iconColor={isMovieFavorite ? colors.blue : colors.white}
-                        backgroundColor="rgba(0, 0, 0, 0.6)"
+                        backgroundColor={colors.rgbaBg4}
                         style={styles.favoriteButton}
                     />
                     

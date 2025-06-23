@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 13, 13, 0.8)',
+    backgroundColor: colors.shadow8,
     borderRadius: 20,
     paddingHorizontal: 20,
     borderWidth: 1,
@@ -58,6 +58,6 @@ export const styles = StyleSheet.create({
     marginLeft: 12,
     padding: 4,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.simpleShadow1,
   },
 }); 

@@ -16,10 +16,10 @@ export const styles = StyleSheet.create({
   },
   glassContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(13, 13, 13, 0.8)',
+    backgroundColor: colors.shadow8,
     borderRadius: 0,
     borderTopWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.simpleShadow1,
     shadowColor: colors.shadowDark,
     shadowOffset: {
       width: 0,
