@@ -316,6 +316,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 16,
   },
+  castButton: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+  },
   gradientBg: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 0,

@@ -19,7 +19,7 @@ export function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const scrollY = new Animated.Value(0);
-
+  
   const {
     trendingMovies,
     popularMovies,
@@ -87,7 +87,7 @@ export function Home() {
       if (isSearching) {
         return null;
       } else if (searchResults.length > 0) {
-        return (
+  return (
           <HomeContent
             trendingMovies={trendingMovies}
             popularMovies={popularMovies}

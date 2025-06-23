@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
 import { Provider } from 'react-redux';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Navigation } from './navigation';
 import { store } from './store';
 
@@ -25,7 +26,9 @@ export function App() {
 
   return (
     <Provider store={store}>
-      <Navigation />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Navigation />
+      </GestureHandlerRootView>
     </Provider>
   );
 }

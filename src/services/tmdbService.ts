@@ -104,6 +104,44 @@ export interface MovieCredits {
   crew: CrewMember[];
 }
 
+export interface Person {
+  adult: boolean;
+  also_known_as: string[];
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  gender: number;
+  homepage: string | null;
+  id: number;
+  imdb_id: string | null;
+  known_for_department: string;
+  name: string;
+  place_of_birth: string | null;
+  popularity: number;
+  profile_path: string | null;
+  combined_credits?: {
+    cast: Array<{
+      id: number;
+      title: string;
+      character: string;
+      poster_path: string | null;
+      release_date: string;
+      vote_average: number;
+      media_type: string;
+    }>;
+    crew: Array<{
+      id: number;
+      title: string;
+      job: string;
+      department: string;
+      poster_path: string | null;
+      release_date: string;
+      vote_average: number;
+      media_type: string;
+    }>;
+  };
+}
+
 export const tmdbService = {
   // Get popular movies
   getPopularMovies: async (page: number = 1): Promise<MoviesResponse> => {
@@ -222,6 +260,21 @@ export const tmdbService = {
       return response.data;
     } catch (error) {
       console.error('Error fetching movie credits:', error);
+      throw error;
+    }
+  },
+
+  // Get person details (actor/actress information)
+  getPersonDetails: async (personId: number): Promise<Person> => {
+    try {
+      const response = await tmdbApi.get(`/person/${personId}`, {
+        params: {
+          append_to_response: 'combined_credits'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching person details:', error);
       throw error;
     }
   },

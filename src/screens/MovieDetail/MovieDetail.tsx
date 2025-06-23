@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
-  Dimensions,
   Animated,
   FlatList
 } from 'react-native';
@@ -16,12 +15,11 @@ import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, 
 import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { styles } from './MovieDetail.style';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFavorites } from '../../hooks/useFavorites';
 import { Button } from '../../components/Button/Button';
 import { CastMember } from '../../services/tmdbService';
+import CastBottomSheet from '../../components/CastBottomSheet/CastBottomSheet';
 
-const { width, height } = Dimensions.get('window');
 
 export function MovieDetail() {
   const navigation = useAppNavigation<'MovieDetail'>();
@@ -32,6 +30,8 @@ export function MovieDetail() {
   const [credits, setCredits] = useState<MovieCredits | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCastBottomSheetVisible, setIsCastBottomSheetVisible] = useState(false);
+  const [selectedCastMember, setSelectedCastMember] = useState<CastMember | null>(null);
   const scrollY = new Animated.Value(0);
 
   useEffect(() => {
@@ -64,6 +64,11 @@ export function MovieDetail() {
     if (movie) {
       toggleFavoriteMovie(movie);
     }
+  };
+
+  const handleCastBottomSheetClose = () => {
+    setIsCastBottomSheetVisible(false);
+    setSelectedCastMember(null);
   };
 
   if (loading) {
@@ -191,7 +196,14 @@ export function MovieDetail() {
                 contentContainerStyle={styles.castListContainer}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item: actor }) => (
-                  <View style={styles.castItem}>
+                  <TouchableOpacity 
+                    style={styles.castItem}
+                    onPress={() => {
+                      setSelectedCastMember(actor);
+                      setIsCastBottomSheetVisible(true);
+                    }}
+                    activeOpacity={0.7}
+                  >
                     {actor.profile_path ? (
                       <Image
                         source={{
@@ -211,7 +223,7 @@ export function MovieDetail() {
                     <Text style={styles.castCharacter} numberOfLines={1}>
                       {actor.character}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                 )}
               />
             </View>
@@ -298,6 +310,14 @@ export function MovieDetail() {
           </View>
         </View>
       </Animated.ScrollView>
+      {isCastBottomSheetVisible && selectedCastMember && (
+        <CastBottomSheet
+          isVisible={isCastBottomSheetVisible}
+          onClose={handleCastBottomSheetClose}
+          selectedCastMember={selectedCastMember}
+          movieTitle={movie?.title || 'Film'}
+        />
+      )}
     </View>
   );
 } 

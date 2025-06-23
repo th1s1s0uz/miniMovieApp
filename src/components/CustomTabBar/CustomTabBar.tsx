@@ -121,30 +121,30 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
           ]}
         />
         
-        {state.routes.map((route: any, index: number) => {
-          const { options } = descriptors[route.key];
-          const tabItem = tabItems.find(item => item.name === route.name);
-          const isFocused = state.index === index;
+      {state.routes.map((route: any, index: number) => {
+        const { options } = descriptors[route.key];
+        const tabItem = tabItems.find(item => item.name === route.name);
+        const isFocused = state.index === index;
           const isPressed = pressedTab === index;
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
 
-          const onLongPress = () => {
-            navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
+        const onLongPress = () => {
+          navigation.emit({
+            type: 'tabLongPress',
+            target: route.key,
+          });
+        };
 
           const onPressIn = () => {
             setPressedTab(index);
@@ -156,24 +156,24 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
             animatePress(index, false);
           };
 
-          const iconName = isFocused 
-            ? tabItem?.icon.replace('-outline', '') 
-            : tabItem?.icon;
+        const iconName = isFocused 
+          ? tabItem?.icon.replace('-outline', '') 
+          : tabItem?.icon;
 
-          return (
-            <TouchableOpacity
-              key={route.key}
-              accessibilityRole="button"
-              accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarTestID}
-              onPress={onPress}
-              onLongPress={onLongPress}
+        return (
+          <TouchableOpacity
+            key={route.key}
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            onLongPress={onLongPress}
               onPressIn={onPressIn}
               onPressOut={onPressOut}
-              style={styles.tabItem}
+            style={styles.tabItem}
               activeOpacity={1}
-            >
+          >
               <Animated.View 
                 style={[
                   styles.tabContent, 
@@ -187,16 +187,16 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
                 ]}
               >
                 <Animated.View style={styles.iconContainer}>
-                  <Ionicons
-                    name={iconName as any}
-                    size={24}
-                    color={isFocused ? colors.blue : colors.lightText}
-                  />
+                <Ionicons
+                  name={iconName as any}
+                  size={24}
+                  color={isFocused ? colors.blue : colors.lightText}
+                />
                 </Animated.View>
               </Animated.View>
-            </TouchableOpacity>
-          );
-        })}
+          </TouchableOpacity>
+        );
+      })}
       </View>
     </View>
   );
