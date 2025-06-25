@@ -19,7 +19,6 @@ interface CustomSplashScreenProps {
 
 export const CustomSplashScreen: React.FC<CustomSplashScreenProps> = ({ onFinish }) => {
   useEffect(() => {
-    // Auto finish after 3 seconds
     const timer = setTimeout(() => {
       onFinish();
     }, 3000);
@@ -39,7 +38,6 @@ export const CustomSplashScreen: React.FC<CustomSplashScreenProps> = ({ onFinish
       />
       
       <View style={styles.content}>
-        {/* Custom Loader */}
         <View style={styles.loaderContainer}>
           <CustomLoader
             size="large"
@@ -49,18 +47,15 @@ export const CustomSplashScreen: React.FC<CustomSplashScreenProps> = ({ onFinish
           />
         </View>
 
-        {/* Title */}
         <Text style={styles.title}>
           Mini Movie App
         </Text>
 
-        {/* Subtitle */}
         <Text style={styles.subtitle}>
           Film dünyasını keşfedin
         </Text>
       </View>
 
-      {/* Version */}
       <View style={styles.versionContainer}>
         <Text style={styles.versionText}>v1.0.0</Text>
       </View>

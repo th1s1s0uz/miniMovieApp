@@ -110,7 +110,6 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.glassContainer}>
-        {/* Animated top indicator */}
         <Animated.View 
           style={[
             styles.activeTopIndicator,

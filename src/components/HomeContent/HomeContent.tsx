@@ -25,11 +25,10 @@ interface HomeContentProps {
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-// Search results grid dimensions
 const SEARCH_GRID_PADDING = 16;
 const SEARCH_ITEM_SPACING = 12;
 const SEARCH_ITEM_WIDTH = (screenWidth - (SEARCH_GRID_PADDING * 2) - SEARCH_ITEM_SPACING) / 2;
-const SEARCH_ITEM_HEIGHT = SEARCH_ITEM_WIDTH * 1.5; // 3:2 aspect ratio
+const SEARCH_ITEM_HEIGHT = SEARCH_ITEM_WIDTH * 1.5;
 const SEARCH_ITEM_MARGIN = 6;
 
 export const HomeContent: React.FC<HomeContentProps> = ({
@@ -49,23 +48,20 @@ export const HomeContent: React.FC<HomeContentProps> = ({
     const scrollViewRef = useRef<any>(null);
     const insets = useSafeAreaInsets();
 
-    // Get featured movie for banner (random from trending movies) - useMemo ile sabit
     const featuredMovie = useMemo((): Movie | null => {
         if (trendingMovies.length > 0) {
             const randomIndex = Math.floor(Math.random() * trendingMovies.length);
             return trendingMovies[randomIndex];
         }
         return null;
-    }, [trendingMovies]); // Sadece trendingMovies değiştiğinde yeniden hesapla
+    }, [trendingMovies]);
 
-    // Scroll to top only when switching to search mode
     useEffect(() => {
         if (scrollViewRef.current && isSearchMode) {
             scrollViewRef.current.scrollTo({ y: 0, animated: true });
         }
     }, [isSearchMode]);
 
-    // Memoized render item for search results
     const renderSearchResultItem = useCallback(({ item }: { item: Movie }) => (
         <View style={styles.searchResultItem}>
             <MovieCard
@@ -75,13 +71,11 @@ export const HomeContent: React.FC<HomeContentProps> = ({
         </View>
     ), [onMoviePress]);
 
-    // Memoized key extractor for search results
     const keyExtractor = useCallback((item: Movie) => `search-${item.id}`, []);
 
-    // Memoized getItemLayout for search results FlatList (vertical grid)
     const getItemLayout = useCallback((data: any, index: number) => {
         const rowIndex = Math.floor(index / 2); // 2 columns
-        const rowHeight = SEARCH_ITEM_HEIGHT + SEARCH_ITEM_MARGIN * 2 + 16; // 16 is marginBottom
+        const rowHeight = SEARCH_ITEM_HEIGHT + SEARCH_ITEM_MARGIN * 2 + 16;
         return {
             length: rowHeight,
             offset: rowHeight * rowIndex,
@@ -89,7 +83,6 @@ export const HomeContent: React.FC<HomeContentProps> = ({
         };
     }, []);
 
-    // Calculate initial number to render based on screen height
     const searchInitialNumToRender = useMemo(() => {
         const visibleRows = Math.ceil(screenHeight / (SEARCH_ITEM_HEIGHT + SEARCH_ITEM_MARGIN * 2 + 16)) + 1;
         const itemsPerRow = 2;
@@ -200,12 +193,10 @@ export const HomeContent: React.FC<HomeContentProps> = ({
         );
     };
 
-    // If in search mode, return only FlatList
     if (isSearchMode) {
         return renderSearchResults();
     }
 
-    // Otherwise return normal ScrollView content
     return (
         <ScrollView
             ref={scrollViewRef}

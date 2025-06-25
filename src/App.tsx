@@ -29,15 +29,11 @@ function AppContent() {
   const [isSplashVisible, setIsSplashVisible] = React.useState(true);
   const [isAppReady, setIsAppReady] = React.useState(false);
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
 
   React.useEffect(() => {
-    // Hide native splash screen
     SplashScreen.hideAsync();
     
-    // Simulate app initialization
     const initializeApp = async () => {
-      // Add any app initialization logic here
       await new Promise(resolve => setTimeout(resolve, 100));
       setIsAppReady(true);
     };
@@ -53,7 +49,6 @@ function AppContent() {
     setIsSplashVisible(false);
   };
 
-  // Show splash screen until app is ready
   if (isSplashVisible || !isAppReady) {
     return <CustomSplashScreen onFinish={handleSplashFinish} />;
   }

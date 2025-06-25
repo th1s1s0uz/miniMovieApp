@@ -6,7 +6,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: colors.rgbaBg5,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.simpleShadow2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.simpleShadow2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -72,13 +72,13 @@ export const styles = StyleSheet.create({
     opacity: 0.9,
   },
   actionButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.simpleShadow2,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: colors.simpleShadow3,
   },
   actionButtonText: {
     fontSize: 16,

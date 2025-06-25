@@ -19,7 +19,6 @@ export const styles = StyleSheet.create({
     },
     favoritesContent: {
       paddingHorizontal: 8,
-      // paddingTop and paddingBottom will be set dynamically based on safe area insets
     },
     emptyContentContainer: {
       flex: 1,

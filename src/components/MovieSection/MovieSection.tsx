@@ -28,19 +28,16 @@ export const MovieSection: React.FC<MovieSectionProps> = ({
     <MovieCard movie={item} onPress={onMoviePress} />
   ), [onMoviePress]);
 
-  // Memoized key extractor
   const keyExtractor = useCallback((item: Movie) => `section-${title}-${item.id}`, [title]);
 
-  // Memoized getItemLayout for horizontal FlatList
   const getItemLayout = useCallback((data: any, index: number) => ({
     length: ITEM_WIDTH,
     offset: ITEM_WIDTH * index,
     index,
   }), []);
 
-  // Calculate initial number to render based on screen width
   const initialNumToRender = useMemo(() => {
-    const visibleItems = Math.ceil(screenWidth / ITEM_WIDTH) + 1; // +1 for partial item
+    const visibleItems = Math.ceil(screenWidth / ITEM_WIDTH) + 1;
     return Math.min(visibleItems, movies.length);
   }, [movies.length]);
 

@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../constants/colors";
 
 const { width } = Dimensions.get('window');
-const cardWidth = (width - 32) / 2; // 2 sütun, 8px margin her yanda
+const cardWidth = (width - 32) / 2;
 
 export const styles = StyleSheet.create({
     container: {
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
     image: {
         borderRadius: 24,
         width: '100%',
-        height: cardWidth * 1.5, // 3:2 aspect ratio
+        height: cardWidth * 1.5, 
         backgroundColor: colors.black,
     },
     glassOverlay: {

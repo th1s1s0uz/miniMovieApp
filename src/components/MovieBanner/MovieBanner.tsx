@@ -87,7 +87,6 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
           </View>
         </View>
         
-        {/* Bottom Section - Content */}
         <View style={styles.bottomContent}>
           <Text style={styles.title} numberOfLines={2}>
             {movie.title}

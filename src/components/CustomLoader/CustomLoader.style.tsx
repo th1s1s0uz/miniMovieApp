@@ -13,7 +13,6 @@ export const styles = StyleSheet.create({
       marginBottom: 12,
     },
     lottieAnimation: {
-      // Size will be set dynamically
     },
     loadingText: {
       color: colors.lightGray,

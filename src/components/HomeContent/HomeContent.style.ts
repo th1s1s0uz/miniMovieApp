@@ -17,7 +17,6 @@ export const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: colors.black,
         zIndex: 1,
-        // paddingTop will be set dynamically based on safe area insets
     },
     searchResultsTitle: {
         fontSize: 20,

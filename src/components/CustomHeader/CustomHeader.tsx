@@ -48,15 +48,12 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
       const scrollDirection = currentScrollY > lastScrollY.current ? 'down' : 'up';
       const scrollDelta = Math.abs(currentScrollY - lastScrollY.current);
 
-      // Prevent multiple animations at once
       if (isAnimating.current) return;
 
-      // More sensitive scroll detection
       if (scrollDelta > 2) {
         isAnimating.current = true;
 
         if (scrollDirection === 'down' && currentScrollY > 5) {
-          // Scrolling down - hide header quickly
           Animated.parallel([
             Animated.timing(headerTranslateY, {
               toValue: -headerHeight,
@@ -72,7 +69,6 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
             isAnimating.current = false;
           });
         } else if (scrollDirection === 'up') {
-          // Scrolling up - show header quickly
           Animated.parallel([
             Animated.timing(headerTranslateY, {
               toValue: 0,
