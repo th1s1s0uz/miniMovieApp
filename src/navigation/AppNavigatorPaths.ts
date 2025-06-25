@@ -4,8 +4,8 @@ import { useNavigation as useReactNavigation } from "@react-navigation/native";
 const AppNavigatorPaths = {
   HomeTabs: 'HomeTabs',
   Home: 'Home',
+  MovieDetail: 'MovieDetail',
   Favorites: 'Favorites',
-  Profile: "Profile",
   Settings: "Settings",
   NotFound: "NotFound",
 } as const;
@@ -13,8 +13,8 @@ const AppNavigatorPaths = {
 export type AppNavigatorParamList = {
   HomeTabs: undefined;
   Home: undefined;
+  MovieDetail: { movieId: number };
   Favorites: undefined;
-  Profile: { user?: string };
   Settings: undefined;
   NotFound: undefined;
 };

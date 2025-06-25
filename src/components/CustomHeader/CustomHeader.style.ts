@@ -3,13 +3,16 @@ import { colors } from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 50,
-    paddingBottom: 16,
-    backgroundColor: colors.black,
+    backgroundColor: 'transparent',
   },
   leftContainer: {
     flexDirection: 'row',
@@ -28,6 +31,10 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1,
     letterSpacing: 0.5,
+  },
+  searchContainer: {
+    flex: 1,
+    marginHorizontal: 8,
   },
   iconButton: {
     paddingHorizontal: 8

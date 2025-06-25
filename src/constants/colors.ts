@@ -1,13 +1,10 @@
 export const colors = {
   // Ana renkler
-  green: '#b4d429',
+
   black: '#0d0d0d',
   white: '#f5f5f5',
   secondaryBlack: '#252525',
-  
-  // Türetilmiş renkler
-  lightGreen: '#c4e439', // Daha açık yeşil
-  darkGreen: '#a4c419', // Daha koyu yeşil
+  blue: '#43b4fc',
   
   // Gri tonları
   lightGray: '#e5e5e5',
@@ -29,9 +26,26 @@ export const colors = {
   warning: '#ff9500',
   info: '#007aff',
   
+  rgbaBlue9: 'rgba(67, 180, 252, 0.9)',
   // Gölge renkleri
   shadow: 'rgba(13, 13, 13, 0.1)',
+  shadow8: 'rgba(13, 13, 13, 0.8)',
   shadowDark: 'rgba(13, 13, 13, 0.2)',
+
+  bottomSheetGradient: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)', 'rgba(255,255,255,0.02)'],
+  gradientBg: ['#1a3d6d', '#0d0d0d', '#0d0d0d'],
+
+  simpleShadow1: 'rgba(255, 255, 255, 0.1)',
+  simpleShadow2: 'rgba(255, 255, 255, 0.2)',
+  simpleShadow3: 'rgba(255, 255, 255, 0.3)',
+  simpleShadow5: 'rgba(255, 255, 255, 0.5)',
+  simpleShadow8: 'rgba(255, 255, 255, 0.8)',
+
+  rgbaBg4: 'rgba(0, 0, 0, 0.4)',
+  rgbaBg5: 'rgba(0, 0, 0, 0.5)',
+  rgbaBg8: 'rgba(0, 0, 0, 0.8)',
+
+
 } as const;
 
 export type Colors = typeof colors; 

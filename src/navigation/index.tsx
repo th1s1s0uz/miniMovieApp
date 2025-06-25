@@ -4,12 +4,13 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from '../screens/Home/Home';
-import { Profile } from '../screens/Profile/Profile';
+import { MovieDetail } from '../screens/MovieDetail/MovieDetail';
 import { Settings } from '../screens/Settings/Settings';
 import { Favorites } from '../screens/Favorites/Favorites';
 import { NotFound } from '../screens/NotFound';
 import AppNavigatorPaths from './AppNavigatorPaths';
 import { CustomTabBar } from '../components/CustomTabBar/CustomTabBar';
+import { colors } from '../constants/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,6 +20,13 @@ const HomeTabs = () => {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
+        tabBarStyle: {
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
       }}
     >
       <Tab.Screen
@@ -46,6 +54,9 @@ const RootStack = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        contentStyle: {
+          backgroundColor: colors.black,
+        },
       }}
     >
       <Stack.Screen
@@ -56,8 +67,11 @@ const RootStack = () => {
         }}
       />
       <Stack.Screen
-        name={AppNavigatorPaths.Profile}
-        component={Profile}
+        name={AppNavigatorPaths.MovieDetail}
+        component={MovieDetail}
+        options={{
+          presentation: 'card',
+        }}
       />
       <Stack.Screen
         name={AppNavigatorPaths.Settings}
@@ -86,6 +100,35 @@ export const Navigation = () => {
           'helloworld://',
         ],
       }}
+      theme={{
+        dark: true,
+        colors: {
+          primary: colors.blue,
+          background: colors.black,
+          card: colors.black,
+          text: colors.white,
+          border: colors.darkGray,
+          notification: colors.blue,
+        },
+        fonts: {
+          regular: {
+            fontFamily: 'System',
+            fontWeight: '400',
+          },
+          medium: {
+            fontFamily: 'System',
+            fontWeight: '500',
+          },
+          bold: {
+            fontFamily: 'System',
+            fontWeight: '700',
+          },
+          heavy: {
+            fontFamily: 'System',
+            fontWeight: '900',
+          },
+        },
+      }}
     >
       <RootStack />
     </NavigationContainer>
@@ -95,6 +138,7 @@ export const Navigation = () => {
 export type RootStackParamList = {
   HomeTabs: undefined;
   Home: undefined;
+  MovieDetail: { movieId: number };
   Favorites: undefined;
   Profile: { user?: string };
   Settings: undefined;

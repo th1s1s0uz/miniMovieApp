@@ -1,75 +1,12 @@
-# Starter Template with React Navigation
+node versiyonum: v20.12.2
+java versiyonum: java 17.0.11 2024-04-16 LTS
 
-This is a minimal starter template for React Native apps using Expo and React Navigation.
+Projeyi indirip npm install ile node-modules doyalarını indirdikten sonra npm run ios veya npm run android demeniz yeterli olacaktır diye düşünüyorum
 
-It includes the following:
-
-- Example [Native Stack](https://reactnavigation.org/docs/native-stack-navigator) with a nested [Bottom Tab](https://reactnavigation.org/docs/bottom-tab-navigator)
-- Web support with [React Native for Web](https://necolas.github.io/react-native-web/)
-- TypeScript support and configured for React Navigation
-- Automatic [deep link](https://reactnavigation.org/docs/deep-linking) and [URL handling configuration](https://reactnavigation.org/docs/configuring-links)
-- Theme support [based on system appearance](https://reactnavigation.org/docs/themes/#using-the-operating-system-preferences)
-- Expo [Development Build](https://docs.expo.dev/develop/development-builds/introduction/) with [Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)
-- Edge-to-edge configured on Android with [`react-native-edge-to-edge`](https://www.npmjs.com/package/react-native-edge-to-edge)
-
-## Getting Started
-
-1. Create a new project using this template:
-
-   ```sh
-   npx create-expo-app@latest --template react-navigation/template
-   ```
-
-2. Edit the `app.json` file to configure the `name`, `slug`, `scheme` and bundle identifiers (`ios.bundleIdentifier` and `android.bundleIdentifier`) for your app.
-
-3. Edit the `src/App.tsx` file to start working on your app.
-
-## Running the app
-
-- Install the dependencies:
-
-  ```sh
-  npm install
-  ```
-
-- Start the development server:
-
-  ```sh
-  npm start
-  ```
-
-- Build and run iOS and Android development builds:
-
-  ```sh
-  npm run ios
-  # or
-  npm run android
-  ```
-
-- In the terminal running the development server, press `i` to open the iOS simulator, `a` to open the Android device or emulator, or `w` to open the web browser.
-
-## Notes
-
-This project uses a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and cannot be run with [Expo Go](https://expo.dev/go). To run the app with Expo Go, edit the `package.json` file, remove the `expo-dev-client` package and `--dev-client` flag from the `start` script.
-
-We highly recommend using the development builds for normal development and testing.
-
-The `ios` and `android` folder are gitignored in the project by default as they are automatically generated during the build process ([Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)). This means that you should not edit these folders directly and use [config plugins](https://docs.expo.dev/config-plugins/) instead. However, if you need to edit these folders, you can remove them from the `.gitignore` file so that they are tracked by git.
-
-## Resources
-
-- [React Navigation documentation](https://reactnavigation.org/)
-- [Expo documentation](https://docs.expo.dev/)
-
----
-
-Demo assets are from [lucide.dev](https://lucide.dev/)
-
-# Project Rules – React Native
-
-This project is developed for professional purposes. Code quality and maintainability must be top priority at all times.
-
----
+Bu projenin yapımında Cursor ve Gpt'yi aktif olarak kullanıldım.
+Yapay zekaya projenin tamamını vermektense mimariye ben karar veriyorum. Ana iskeleti Cursor'a ve ufak detayları Gpt'ye yaptırıyorum.
+Yazılan kodları okuyup gerekli düzenlemeleri yapıyorum.
+Read.me dosyasında Cursor'a aşağıdaki gibi kuralları tanıyorum ve bunun dışına çıkmamasını söylüyorum.
 
 ## ✅ General Rules
 
@@ -92,3 +29,21 @@ This project is developed for professional purposes. Code quality and maintainab
 - Components must be organized under the `components/` directory.
 - Avoid code duplication by separating reusable logic into components.
 
+Ai kullanımının en önemli noktası nasıl düşündüğünü anlamak. Onunla Zaman geçirdikçe prompt yazma yeteneğiniz gelişiyor.
+Konuşmanın akışını bozmadığınız ve gereksiz karmaşa çıkmadığı sürece bir çok işi yaptırabiliyorsunuz. Bu yüzden yaptığı hatayı söylemektense eski mesajı düzenlemek ve daha iyi açıklamak her zaman daha verimli olur.
+Promp kalitesi için noktalama işaretleri ve betimleme yeteneğiniz çok önemli. Mimariye siz karar verdiğiniz ve her zaman tek bir sohbette kalmayı başarmak önemli.
+Örnek bir prompt:
+
+"Merhaba, senden bir useApi adında hook istiyorum. Projemdeli bütün istekleri bu hook ile atacağım. Bu sayede error ve success mesajlarını tek bir yerden yöneteceğim. Hata durumunda CustomPopUp komponentimi buradan aktif edeceğim. Hata kodu 401 dönerse kullanıcının tokenini sileceğiz."
+
+Yapacağımız işin mantığını ona anlatıyorum ve sürekli projenin geneli hakkında da bilgi veriyorum. Bu sayede her zaman onu güncel tutmuş oluyorum ve Cursor'da ana iskeleti kurmam kısa sürüyor.
+
+Kütüphane tercihleri:
+-Lottie ve Animated ile uı'ı zenginleştirdim.
+-Proje büyük bir proje değil bana kalsa zustand kullanırdım ancak siz redux istediniz ve bu yüzden redux kullandım. Ayrıca ilk defa Redux saga kullandım.
+-BottomSheet sektörde standart haline geldiği için oyuncuların detayını onunla gösterdim.
+-Favorilere eklenen filmlerin bilgilerini async storage ile saklıyorum.
+
+İncelediğiniz için teşekkür ederim.
+
+Ekstra bir bilgi: Ai istediğiniz şeyi yapmaya çok yaklaşırsa ama başaramazsa ona 100 dolar bahşiş vereceğinizi söyleyin.

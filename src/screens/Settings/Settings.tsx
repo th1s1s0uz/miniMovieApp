@@ -53,7 +53,7 @@ export function Settings() {
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              trackColor={{ false: colors.lightGray, true: colors.green }}
+              trackColor={{ false: colors.lightGray, true: colors.blue }}
               thumbColor={colors.white}
             />
           </TouchableOpacity>
@@ -70,7 +70,7 @@ export function Settings() {
             <Switch
               value={darkModeEnabled}
               onValueChange={setDarkModeEnabled}
-              trackColor={{ false: colors.lightGray, true: colors.green }}
+              trackColor={{ false: colors.lightGray, true: colors.blue }}
               thumbColor={colors.white}
             />
           </TouchableOpacity>
@@ -83,7 +83,7 @@ export function Settings() {
             <Switch
               value={autoPlayEnabled}
               onValueChange={setAutoPlayEnabled}
-              trackColor={{ false: colors.lightGray, true: colors.green }}
+              trackColor={{ false: colors.lightGray, true: colors.blue }}
               thumbColor={colors.white}
             />
           </TouchableOpacity>
