@@ -3,12 +3,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
   Modal,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
 import { styles } from './Popup.style';
 
 interface PopupProps {
@@ -18,8 +15,6 @@ interface PopupProps {
   type: 'error' | 'success' | 'warning' | 'info';
   onClose: () => void;
 }
-
-const { width: screenWidth } = Dimensions.get('window');
 
 export const Popup: React.FC<PopupProps> = ({
   isVisible,

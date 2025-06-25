@@ -10,7 +10,6 @@ import { usePersonDetails } from '../../hooks/useMovieDetails';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Movie item dimensions for horizontal FlatList
 const MOVIE_ITEM_WIDTH = 120;
 const MOVIE_ITEM_MARGIN = 12;
 const MOVIE_ITEM_TOTAL_WIDTH = MOVIE_ITEM_WIDTH + MOVIE_ITEM_MARGIN;
@@ -47,7 +46,6 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
       fetchPersonDetails(selectedCastMember.id);
     }
 
-    // Cleanup when component unmounts or cast member changes
     return () => {
       clearPersonData();
     };
@@ -59,15 +57,12 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
   };
 
   const handleMoviePress = useCallback((movie: any) => {
-    // Close the bottom sheet first
     onClose();
-    // Navigate to movie detail after a short delay to allow bottom sheet to close
     setTimeout(() => {
       navigation.navigate('MovieDetail', { movieId: movie.id });
     }, 300);
   }, [onClose, navigation]);
 
-  // Memoized render item for movie list
   const renderMovieItem = useCallback(({ item: movie }: { item: any }) => (
     <TouchableOpacity 
       style={styles.movieItem}
@@ -101,17 +96,14 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
     </TouchableOpacity>
   ), [handleMoviePress]);
 
-  // Memoized key extractor for movie list
   const movieKeyExtractor = useCallback((item: any) => `movie-${item.id}`, []);
 
-  // Memoized getItemLayout for horizontal FlatList
   const getMovieItemLayout = useCallback((data: any, index: number) => ({
     length: MOVIE_ITEM_TOTAL_WIDTH,
     offset: MOVIE_ITEM_TOTAL_WIDTH * index,
     index,
   }), []);
 
-  // Calculate initial number to render based on screen width
   const movieInitialNumToRender = useMemo(() => {
     const visibleItems = Math.ceil(screenWidth / MOVIE_ITEM_TOTAL_WIDTH) + 1;
     return Math.min(visibleItems, personDetails?.combined_credits?.cast?.length || 0);

@@ -29,7 +29,6 @@ export const useMovies = () => {
   }, []);
 
   return {
-    // Movie data
     trendingMovies,
     popularMovies,
     nowPlayingMovies,
@@ -37,12 +36,10 @@ export const useMovies = () => {
     topRatedMovies,
     discoverMovies,
     
-    // Loading states
     loading,
     refreshing,
     error,
     
-    // Actions
     onRefresh,
     fetchAllMovies,
   };

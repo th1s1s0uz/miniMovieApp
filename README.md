@@ -5,7 +5,10 @@ Projeyi indirip npm install ile node-modules doyalarını indirdikten sonra npm 
 
 Bu projenin yapımında Cursor ve Gpt'yi aktif olarak kullanıldım.
 Yapay zekaya projenin tamamını vermektense mimariye ben karar veriyorum. Ana iskeleti Cursor'a ve ufak detayları Gpt'ye yaptırıyorum.
-Yazılan kodları okuyup gerekli düzenlemeleri yapıyorum.
+Yazılan kodları okuyup gerekli düzenlemeleri yapıyorum. Yada ona başlangıç için temiz kodlar veriyorum ve zaman kaybı olan bölümleri ona yaptırıyorum.
+
+Bütün parçaları (özellikle tekrar eden kodları) component olarak tasarladım.
+
 Read.me dosyasında Cursor'a aşağıdaki gibi kuralları tanıyorum ve bunun dışına çıkmamasını söylüyorum.
 
 ## ✅ General Rules

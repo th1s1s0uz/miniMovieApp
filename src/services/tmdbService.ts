@@ -10,13 +10,11 @@ const tmdbApi = axios.create({
     api_key: API_KEY,
     language: 'tr-TR',
   },
-  timeout: 10000, // 10 saniye timeout
+  timeout: 10000,
 });
 
-// Request interceptor
 tmdbApi.interceptors.request.use(
   (config) => {
-    // Request gönderilmeden önce yapılacak işlemler
     return config;
   },
   (error) => {
@@ -24,37 +22,28 @@ tmdbApi.interceptors.request.use(
   }
 );
 
-// Response interceptor
 tmdbApi.interceptors.response.use(
   (response) => {
-    // Başarılı response
     return response;
   },
   (error) => {
-    // Error handling
     if (error.response) {
-      // Server error (4xx, 5xx)
       const status = error.response.status;
       const message = error.response.data?.status_message || `HTTP ${status} hatası`;
       
-      // Error objesini zenginleştir
       error.statusCode = status;
       error.errorMessage = message;
       
-      // 401 hatası için özel handling
       if (status === 401) {
         error.errorMessage = 'API anahtarı geçersiz veya süresi dolmuş.';
       }
       
-      // 429 rate limit hatası için özel handling
       if (status === 429) {
         error.errorMessage = 'API istek limiti aşıldı. Lütfen biraz bekleyin.';
       }
     } else if (error.request) {
-      // Network error
       error.errorMessage = 'Sunucuya bağlanılamıyor. İnternet bağlantınızı kontrol edin.';
     } else {
-      // Diğer error'lar
       error.errorMessage = error.message || 'Bilinmeyen bir hata oluştu.';
     }
     

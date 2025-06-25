@@ -21,16 +21,13 @@ export const useSearch = () => {
   }, [dispatch]);
 
   return {
-    // Search data
     searchResults,
     searchQuery,
     hasSearched,
     
-    // Loading and error states
     loading,
     error,
     
-    // Actions
     searchMovies,
     clearSearch,
   };

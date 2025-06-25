@@ -6,7 +6,6 @@ const AppNavigatorPaths = {
   Home: 'Home',
   MovieDetail: 'MovieDetail',
   Favorites: 'Favorites',
-  Settings: "Settings",
   NotFound: "NotFound",
 } as const;
 
@@ -15,7 +14,6 @@ export type AppNavigatorParamList = {
   Home: undefined;
   MovieDetail: { movieId: number };
   Favorites: undefined;
-  Settings: undefined;
   NotFound: undefined;
 };
 

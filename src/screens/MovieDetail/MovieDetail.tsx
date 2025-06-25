@@ -27,12 +27,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Cast card dimensions
 const CAST_CARD_WIDTH = 80;
 const CAST_CARD_MARGIN = 16;
 const CAST_ITEM_WIDTH = CAST_CARD_WIDTH + CAST_CARD_MARGIN;
 
-// Similar movie card dimensions (same as MovieCard)
 const SIMILAR_CARD_WIDTH = (screenWidth - 32) / 2;
 const SIMILAR_CARD_MARGIN = 8;
 const SIMILAR_ITEM_WIDTH = SIMILAR_CARD_WIDTH + SIMILAR_CARD_MARGIN * 2;
@@ -61,7 +59,6 @@ export function MovieDetail() {
       fetchAllMovieData(movieId);
     }
 
-    // Cleanup when component unmounts
     return () => {
       clearMovieData();
     };
@@ -87,7 +84,6 @@ export function MovieDetail() {
     setIsCastBottomSheetVisible(true);
   };
 
-  // Memoized render functions for FlatLists
   const renderCastItem = useCallback(({ item }: { item: CastMember }) => (
     <CastCard
       actor={item}
@@ -104,11 +100,9 @@ export function MovieDetail() {
     </View>
   ), [handleSimilarMoviePress]);
 
-  // Memoized key extractors
   const castKeyExtractor = useCallback((item: CastMember) => `cast-${item.id}`, []);
   const similarMovieKeyExtractor = useCallback((item: Movie) => `similar-${item.id}`, []);
 
-  // Memoized getItemLayout functions
   const getCastItemLayout = useCallback((data: any, index: number) => ({
     length: CAST_ITEM_WIDTH,
     offset: CAST_ITEM_WIDTH * index,
@@ -121,7 +115,6 @@ export function MovieDetail() {
     index,
   }), []);
 
-  // Calculate initial number to render
   const castInitialNumToRender = useMemo(() => {
     const visibleItems = Math.ceil(screenWidth / CAST_ITEM_WIDTH) + 1;
     return Math.min(visibleItems, credits?.cast?.length || 0);

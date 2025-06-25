@@ -46,12 +46,10 @@ export function Home() {
     clearSearch 
   } = useSearch();
 
-  // Load favorites from storage when component mounts
   useEffect(() => {
     loadFavorites();
   }, []);
 
-  // Scroll to top only when switching to search mode
   useEffect(() => {
     if (scrollViewRef.current && hasSearched) {
       scrollViewRef.current.scrollTo({ y: 0, animated: true });

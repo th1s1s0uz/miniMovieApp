@@ -14,14 +14,12 @@ import { Movie } from '../../services/tmdbService';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-// Create animated FlatList for native scroll events
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Movie>);
 
-// Grid dimensions for favorites
 const GRID_PADDING = 16;
 const ITEM_SPACING = 12;
 const ITEM_WIDTH = (screenWidth - (GRID_PADDING * 2) - ITEM_SPACING) / 2;
-const ITEM_HEIGHT = ITEM_WIDTH * 1.5; // 3:2 aspect ratio
+const ITEM_HEIGHT = ITEM_WIDTH * 1.5;
 const ITEM_MARGIN = 6;
 
 export function Favorites() {
@@ -30,7 +28,6 @@ export function Favorites() {
   const scrollY = new Animated.Value(0);
   const insets = useSafeAreaInsets();
 
-  // Sayfa açıldığında favorileri yükle
   useEffect(() => {
     loadFavorites();
   }, []);
@@ -39,7 +36,6 @@ export function Favorites() {
     navigation.navigate('MovieDetail', { movieId: movie.id });
   }, [navigation]);
 
-  // Memoized render item for FlatList
   const renderMovieCard: ListRenderItem<Movie> = useCallback(({ item }) => (
     <View style={styles.movieItem}>
       <MovieCard
@@ -49,13 +45,11 @@ export function Favorites() {
     </View>
   ), [handleMoviePress]);
 
-  // Memoized key extractor
   const keyExtractor = useCallback((item: Movie) => `favorite-${item.id}`, []);
 
-  // Memoized getItemLayout for grid FlatList
   const getItemLayout = useCallback((data: any, index: number) => {
-    const rowIndex = Math.floor(index / 2); // 2 columns
-    const rowHeight = ITEM_HEIGHT + ITEM_MARGIN * 2 + 16; // 16 is marginBottom
+    const rowIndex = Math.floor(index / 2); 
+    const rowHeight = ITEM_HEIGHT + ITEM_MARGIN * 2 + 16;
     return {
       length: rowHeight,
       offset: rowHeight * rowIndex,
@@ -63,14 +57,12 @@ export function Favorites() {
     };
   }, []);
 
-  // Calculate initial number to render based on screen height
   const initialNumToRender = useMemo(() => {
     const visibleRows = Math.ceil(screenHeight / (ITEM_HEIGHT + ITEM_MARGIN * 2 + 16)) + 1;
     const itemsPerRow = 2;
     return Math.min(visibleRows * itemsPerRow, favorites.length);
   }, [favorites.length]);
 
-  // Memoized empty state component
   const renderEmptyState = useCallback(() => (
     <View style={styles.emptyContainer}>
       <Ionicons name="heart-outline" size={64} color={colors.lightText} />
@@ -81,7 +73,6 @@ export function Favorites() {
     </View>
   ), []);
 
-  // Memoized refresh control
   const refreshControl = useMemo(() => (
     <RefreshControl
       refreshing={loading}
@@ -91,12 +82,11 @@ export function Favorites() {
     />
   ), [loading, loadFavorites]);
 
-  // Memoized content container style with dynamic padding
   const contentContainerStyle = useMemo(() => [
     styles.favoritesContent,
     {
-      paddingTop: 60 + insets.top, // 60px header content + safe area top
-      paddingBottom: 60 + insets.bottom, // 60px bottom + safe area bottom
+      paddingTop: 60 + insets.top,
+      paddingBottom: 60 + insets.bottom,
     },
     favorites.length === 0 && styles.emptyContentContainer
   ], [favorites.length, insets.top, insets.bottom]);
@@ -110,8 +100,8 @@ export function Favorites() {
       <LinearGradient
         colors={colors.gradientBg}
         locations={[0, 0.3, 1]}
-        start={{ x: 1, y: 1 }}   // Sağ alt köşe
-        end={{ x: 0, y: 0 }}     // Sol üst köşe
+        start={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 0 }}
         style={styles.gradientBg}
       />
       

@@ -74,13 +74,6 @@ const RootStack = () => {
         }}
       />
       <Stack.Screen
-        name={AppNavigatorPaths.Settings}
-        component={Settings}
-        options={{
-          presentation: 'modal',
-        }}
-      />
-      <Stack.Screen
         name={AppNavigatorPaths.NotFound}
         component={NotFound}
         options={{

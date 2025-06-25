@@ -81,7 +81,6 @@ export const Button: React.FC<ButtonProps> = ({
   );
 
   if (gradientColors && !disabled) {
-    // Extract border radius from button style
     const borderRadius = (style as any)?.borderRadius || 8;
     
     return (

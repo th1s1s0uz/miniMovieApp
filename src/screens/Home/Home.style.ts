@@ -30,7 +30,6 @@ export const styles = StyleSheet.create({
     buttonContainer: {
       gap: 15,
     },
-    // Section styles
     section: {
       marginBottom: 30,
     },

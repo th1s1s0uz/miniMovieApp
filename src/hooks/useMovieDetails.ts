@@ -37,31 +37,25 @@ export const useMovieDetails = () => {
     dispatch(clearMovieDetails());
   }, [dispatch]);
 
-  // Combined loading state
   const isLoading = movieLoading || creditsLoading || similarLoading;
   
-  // Combined error state
   const error = movieError || creditsError || similarError;
 
   return {
-    // Data
     movie,
     credits,
     similarMovies,
     
-    // Loading states
     movieLoading,
     creditsLoading,
     similarLoading,
     isLoading,
     
-    // Error states
     movieError,
     creditsError,
     similarError,
     error,
     
-    // Actions
     fetchMovieDetails,
     fetchMovieCredits,
     fetchSimilarMovies,
@@ -87,16 +81,12 @@ export const usePersonDetails = () => {
   }, [dispatch]);
 
   return {
-    // Data
     personDetails,
     
-    // Loading state
     personLoading,
     
-    // Error state
     personError,
     
-    // Actions
     fetchPersonDetails,
     clearPersonData,
   };
