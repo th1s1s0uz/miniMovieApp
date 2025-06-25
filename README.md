@@ -12,7 +12,7 @@ Yazılan kodları okuyup gerekli düzenlemeleri yapıyorum. Yada ona başlangı�
 
 Bütün parçaları (özellikle tekrar eden kodları) component olarak tasarladım.
 
-Read.me dosyasında Cursor'a aşağıdaki gibi kuralları tanıyorum ve bunun dışına çıkmamasını söylüyorum.
+Read.me dosyasında Cursor'a aşağıdaki gibi kuralları tanıyorum ve bunun dışına çıkmamasını söylüyorum:
 
 ✅ General Rules
 
