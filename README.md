@@ -1,3 +1,5 @@
+Youtube video link : https://www.youtube.com/watch?v=hl6TiB4YymU
+
 node versiyonum: v20.12.2
 java versiyonum: java 17.0.11 2024-04-16 LTS
 
