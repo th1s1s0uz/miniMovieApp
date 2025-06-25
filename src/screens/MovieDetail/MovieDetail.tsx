@@ -1,73 +1,75 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { 
   View, 
   Text, 
   Image, 
   TouchableOpacity, 
-  ActivityIndicator,
   Animated,
-  FlatList
+  FlatList,
+  Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
-import { Movie, useTmdbApi, MovieCredits } from '../../services/tmdbService';
+import { Movie, MovieCredits } from '../../services/tmdbService';
 import { formatRating, formatDate, getPosterUrl, getBackdropUrl, formatRuntime, formatBudget, formatRevenue, formatGenres, formatProductionCompanies, formatSpokenLanguages, formatProductionCountries } from '../../utils/movieUtils';
 import { colors } from '../../constants/colors';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
+import { CustomLoader } from '../../components/CustomLoader/CustomLoader';
 import { styles } from './MovieDetail.style';
 import { useFavorites } from '../../hooks/useFavorites';
+import { useMovieDetails } from '../../hooks/useMovieDetails';
 import { Button } from '../../components/Button/Button';
 import { CastMember } from '../../services/tmdbService';
 import CastBottomSheet from '../../components/CastBottomSheet/CastBottomSheet';
 import { MovieCard } from '../../components/MovieCard/MovieCard';
 import { CastCard } from '../../components/CastCard/CastCard';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width: screenWidth } = Dimensions.get('window');
+
+// Cast card dimensions
+const CAST_CARD_WIDTH = 80;
+const CAST_CARD_MARGIN = 16;
+const CAST_ITEM_WIDTH = CAST_CARD_WIDTH + CAST_CARD_MARGIN;
+
+// Similar movie card dimensions (same as MovieCard)
+const SIMILAR_CARD_WIDTH = (screenWidth - 32) / 2;
+const SIMILAR_CARD_MARGIN = 8;
+const SIMILAR_ITEM_WIDTH = SIMILAR_CARD_WIDTH + SIMILAR_CARD_MARGIN * 2;
 
 export function MovieDetail() {
   const navigation = useAppNavigation<'MovieDetail'>();
   const movieId = (navigation.getState().routes.find(route => route.name === 'MovieDetail')?.params as any)?.movieId;
-  const { toggleFavoriteMovie, isFavorite } = useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
   
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [credits, setCredits] = useState<MovieCredits | null>(null);
-  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
-  const [isCastBottomSheetVisible, setIsCastBottomSheetVisible] = useState(false);
-  const [selectedCastMember, setSelectedCastMember] = useState<CastMember | null>(null);
-  const scrollY = new Animated.Value(0);
+  const {
+    movie,
+    credits,
+    similarMovies,
+    isLoading,
+    error,
+    fetchAllMovieData,
+    clearMovieData,
+  } = useMovieDetails();
 
-  // API hooks
-  const movieDetailsApi = useTmdbApi.useMovieDetails();
-  const movieCreditsApi = useTmdbApi.useMovieCredits();
-  const similarMoviesApi = useTmdbApi.useSimilarMovies();
+  const [isCastBottomSheetVisible, setIsCastBottomSheetVisible] = React.useState(false);
+  const [selectedCastMember, setSelectedCastMember] = React.useState<CastMember | null>(null);
+  const scrollY = new Animated.Value(0);
 
   useEffect(() => {
     if (movieId) {
-      fetchMovieDetails();
+      fetchAllMovieData(movieId);
     }
-  }, [movieId]);
 
-  const fetchMovieDetails = async () => {
-    if (!movieId) return;
-
-    try {
-      // Fetch all movie data in parallel
-      const [movieData, creditsData, similarData] = await Promise.all([
-        movieDetailsApi.execute(movieId),
-        movieCreditsApi.execute(movieId),
-        similarMoviesApi.execute(movieId)
-      ]);
-
-      if (movieData) setMovie(movieData);
-      if (creditsData) setCredits(creditsData);
-      if (similarData) setSimilarMovies(similarData.results);
-    } catch (err) {
-      // Error handling is managed by the useApi hook
-      console.error('Error in fetchMovieDetails:', err);
-    }
-  };
+    // Cleanup when component unmounts
+    return () => {
+      clearMovieData();
+    };
+  }, [movieId, fetchAllMovieData, clearMovieData]);
 
   const handleFavoritePress = () => {
     if (movie) {
-      toggleFavoriteMovie(movie);
+      toggleFavorite(movie);
     }
   };
 
@@ -85,17 +87,59 @@ export function MovieDetail() {
     setIsCastBottomSheetVisible(true);
   };
 
-  // Combine loading states
-  const isLoading = movieDetailsApi.loading || movieCreditsApi.loading || similarMoviesApi.loading;
-  
-  // Combine error states
-  const error = movieDetailsApi.error || movieCreditsApi.error || similarMoviesApi.error;
+  // Memoized render functions for FlatLists
+  const renderCastItem = useCallback(({ item }: { item: CastMember }) => (
+    <CastCard
+      actor={item}
+      onPress={handleCastPress}
+    />
+  ), [handleCastPress]);
+
+  const renderSimilarMovieItem = useCallback(({ item }: { item: Movie }) => (
+    <View style={styles.similarMovieItem}>
+      <MovieCard
+        movie={item}
+        onPress={handleSimilarMoviePress}
+      />
+    </View>
+  ), [handleSimilarMoviePress]);
+
+  // Memoized key extractors
+  const castKeyExtractor = useCallback((item: CastMember) => `cast-${item.id}`, []);
+  const similarMovieKeyExtractor = useCallback((item: Movie) => `similar-${item.id}`, []);
+
+  // Memoized getItemLayout functions
+  const getCastItemLayout = useCallback((data: any, index: number) => ({
+    length: CAST_ITEM_WIDTH,
+    offset: CAST_ITEM_WIDTH * index,
+    index,
+  }), []);
+
+  const getSimilarMovieItemLayout = useCallback((data: any, index: number) => ({
+    length: SIMILAR_ITEM_WIDTH,
+    offset: SIMILAR_ITEM_WIDTH * index,
+    index,
+  }), []);
+
+  // Calculate initial number to render
+  const castInitialNumToRender = useMemo(() => {
+    const visibleItems = Math.ceil(screenWidth / CAST_ITEM_WIDTH) + 1;
+    return Math.min(visibleItems, credits?.cast?.length || 0);
+  }, [credits?.cast?.length]);
+
+  const similarMoviesInitialNumToRender = useMemo(() => {
+    const visibleItems = Math.ceil(screenWidth / SIMILAR_ITEM_WIDTH) + 1;
+    return Math.min(visibleItems, similarMovies?.length || 0);
+  }, [similarMovies?.length]);
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.blue} />
-        <Text style={styles.loadingText}>Film detayları yükleniyor...</Text>
+        <CustomLoader
+          size="large"
+          text="Film detayları yükleniyor..."
+          showText={true}
+        />
       </View>
     );
   }
@@ -106,7 +150,7 @@ export function MovieDetail() {
         <Text style={styles.errorText}>
           {error || 'Film bulunamadı'}
         </Text>
-        <TouchableOpacity style={styles.retryButton} onPress={fetchMovieDetails}>
+        <TouchableOpacity style={styles.retryButton} onPress={() => movieId && fetchAllMovieData(movieId)}>
           <Text style={styles.retryButtonText}>Tekrar Dene</Text>
         </TouchableOpacity>
       </View>
@@ -147,15 +191,28 @@ export function MovieDetail() {
           
           <View style={styles.heroOverlay}>
             <View style={styles.heroContent}>
-              <Image 
-                source={{ 
-                  uri: movie.poster_path 
-                    ? getPosterUrl(movie.poster_path, 'w342', '342x513')
-                    : 'https://via.placeholder.com/342x513/666666/ffffff?text=Poster+Yok'
-                }}
-                style={styles.posterImage}
-                resizeMode="cover"
-              />
+              <View style={styles.posterContainer}>
+                <Image 
+                  source={{ 
+                    uri: movie.poster_path 
+                      ? getPosterUrl(movie.poster_path, 'w342', '342x513')
+                      : 'https://via.placeholder.com/342x513/666666/ffffff?text=Poster+Yok'
+                  }}
+                  style={styles.posterImage}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity 
+                  style={styles.favoriteButton}
+                  onPress={handleFavoritePress}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons 
+                    name={isMovieFavorite ? "heart" : "heart-outline"} 
+                    size={28} 
+                    color={isMovieFavorite ? colors.blue : colors.white} 
+                  />
+                </TouchableOpacity>
+              </View>
               <View style={styles.heroInfo}>
                 <Text style={styles.movieTitle}>{movie.title || 'İsimsiz Film'}</Text>
                 <Text style={styles.movieYear}>{movie.release_date ? formatDate(movie.release_date) : 'Tarih Bilinmiyor'}</Text>
@@ -178,18 +235,18 @@ export function MovieDetail() {
           {movie.overview && movie.overview.trim() !== '' && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Özet</Text>
-                <Button
-                  title=""
-                  onPress={handleFavoritePress}
-                  icon={isMovieFavorite ? "heart" : "heart-outline"}
-                  iconSize={24}
-                  iconColor={isMovieFavorite ? colors.blue : colors.white}
-                  backgroundColor="rgba(0, 0, 0, 0.6)"
-                  style={styles.overviewFavoriteButton}
-                />
+                <Text style={styles.sectionTitle}>Özet</Text>
               </View>
               <Text style={styles.overviewText}>{movie.overview}</Text>
+            </View>
+          )}
+
+          {(!movie.overview || movie.overview.trim() === '') && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Özet</Text>
+              </View>
+              <Text style={styles.overviewText}>Bu film için henüz özet bulunmuyor.</Text>
             </View>
           )}
 
@@ -211,16 +268,16 @@ export function MovieDetail() {
               <Text style={styles.sectionTitle}>Oyuncular</Text>
               <FlatList
                 data={credits.cast.slice(0, 20)}
+                renderItem={renderCastItem}
+                keyExtractor={castKeyExtractor}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.castListContainer}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item: actor }) => (
-                  <CastCard
-                    actor={actor}
-                    onPress={handleCastPress}
-                  />
-                )}
+                getItemLayout={getCastItemLayout}
+                initialNumToRender={castInitialNumToRender}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={4}
+                windowSize={5}
               />
             </View>
           )}
@@ -309,18 +366,16 @@ export function MovieDetail() {
               <Text style={styles.sectionTitle}>Benzer Filmler</Text>
               <FlatList
                 data={similarMovies.slice(0, 10)}
+                renderItem={renderSimilarMovieItem}
+                keyExtractor={similarMovieKeyExtractor}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.similarMoviesContainer}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item: similarMovie }) => (
-                  <View style={styles.similarMovieItem}>
-                    <MovieCard
-                      movie={similarMovie}
-                      onPress={handleSimilarMoviePress}
-                    />
-                  </View>
-                )}
+                getItemLayout={getSimilarMovieItemLayout}
+                initialNumToRender={similarMoviesInitialNumToRender}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={3}
+                windowSize={5}
               />
             </View>
           )}

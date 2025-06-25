@@ -140,7 +140,7 @@ export const styles = StyleSheet.create({
         marginBottom: 16,
     },
     moviesList: {
-
+        paddingHorizontal: 8,
     },
     movieItem: {
         width: 120,

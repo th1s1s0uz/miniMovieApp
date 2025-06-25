@@ -61,6 +61,7 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
         style={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        bounces={false}
         
       >
         {children}

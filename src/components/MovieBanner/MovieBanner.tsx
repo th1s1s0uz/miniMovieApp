@@ -24,7 +24,7 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
   onFavorite, 
   isFavorite: propIsFavorite = false 
 }) => {
-  const { toggleFavoriteMovie, isFavorite } = useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const imageUrl = getPosterUrl(movie.poster_path, 'w500', '500x750');
 
   const handleShare = () => {
@@ -34,7 +34,7 @@ export const MovieBanner: React.FC<MovieBannerProps> = ({
   };
 
   const handleFavorite = () => {
-    toggleFavoriteMovie(movie);
+    toggleFavorite(movie);
     if (onFavorite) {
       onFavorite(movie);
     }

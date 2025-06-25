@@ -15,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0d0d0d"
       },
       "package": "com.satya164.reactnavigationtemplate"
     },
@@ -27,8 +27,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/splash-icon.png"
+          "backgroundColor": "#0d0d0d",
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain"
         }
       ],
       "react-native-edge-to-edge",

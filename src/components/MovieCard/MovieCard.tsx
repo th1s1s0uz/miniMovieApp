@@ -15,7 +15,7 @@ interface MovieCardProps {
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
     const [isPressed, setIsPressed] = useState(false);
     const scaleAnim = useState(new Animated.Value(1))[0];
-    const { toggleFavoriteMovie, isFavorite } = useFavorites();
+    const { toggleFavorite, isFavorite } = useFavorites();
 
     const handlePress = () => {
         if (onPress) {
@@ -40,7 +40,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
     };
 
     const handleFavoritePress = () => {
-        toggleFavoriteMovie(movie);
+        toggleFavorite(movie);
     };
 
     const isMovieFavorite = isFavorite(movie.id);

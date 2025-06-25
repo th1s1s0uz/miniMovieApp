@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useApi } from '../hooks/useApi';
 
 const API_KEY = '11d209aeff612e28d4e0758c52485b0e';
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -347,84 +346,4 @@ export const tmdbService = {
     if (!path) return '';
     return `https://image.tmdb.org/t/p/${size}${path}`;
   }
-};
-
-// Hook-based API functions
-export const useTmdbApi = {
-  // Popular movies hook
-  usePopularMovies: (page: number = 1) => {
-    return useApi(tmdbService.getPopularMovies, {
-      errorTitle: 'Popüler Filmler Yüklenemedi',
-    });
-  },
-
-  // Now playing movies hook
-  useNowPlayingMovies: (page: number = 1) => {
-    return useApi(tmdbService.getNowPlayingMovies, {
-      errorTitle: 'Vizyondaki Filmler Yüklenemedi',
-    });
-  },
-
-  // Top rated movies hook
-  useTopRatedMovies: (page: number = 1) => {
-    return useApi(tmdbService.getTopRatedMovies, {
-      errorTitle: 'En İyi Filmler Yüklenemedi',
-    });
-  },
-
-  // Upcoming movies hook
-  useUpcomingMovies: (page: number = 1) => {
-    return useApi(tmdbService.getUpcomingMovies, {
-      errorTitle: 'Yakında Gelecek Filmler Yüklenemedi',
-    });
-  },
-
-  // Trending movies hook
-  useTrendingMovies: (page: number = 1) => {
-    return useApi(tmdbService.getTrendingMovies, {
-      errorTitle: 'Trend Filmler Yüklenemedi',
-    });
-  },
-
-  // Discover movies hook
-  useDiscoverMovies: (page: number = 1, sortBy: string = 'popularity.desc') => {
-    return useApi(tmdbService.getDiscoverMovies, {
-      errorTitle: 'Film Keşfi Yüklenemedi',
-    });
-  },
-
-  // Search movies hook
-  useSearchMovies: () => {
-    return useApi(tmdbService.searchMovies, {
-      errorTitle: 'Film Arama Başarısız',
-    });
-  },
-
-  // Movie details hook
-  useMovieDetails: () => {
-    return useApi(tmdbService.getMovieDetails, {
-      errorTitle: 'Film Detayları Yüklenemedi',
-    });
-  },
-
-  // Movie credits hook
-  useMovieCredits: () => {
-    return useApi(tmdbService.getMovieCredits, {
-      errorTitle: 'Oyuncu Bilgileri Yüklenemedi',
-    });
-  },
-
-  // Similar movies hook
-  useSimilarMovies: () => {
-    return useApi(tmdbService.getSimilarMovies, {
-      errorTitle: 'Benzer Filmler Yüklenemedi',
-    });
-  },
-
-  // Person details hook
-  usePersonDetails: () => {
-    return useApi(tmdbService.getPersonDetails, {
-      errorTitle: 'Oyuncu Detayları Yüklenemedi',
-    });
-  },
 }; 

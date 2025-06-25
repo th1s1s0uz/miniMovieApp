@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../constants/colors';
 import { styles } from './CustomHeader.style';
 import { SearchBar } from '../SearchBar/SearchBar';
@@ -15,6 +16,7 @@ interface CustomHeaderProps {
   onSearch?: (query: string) => void;
   onClearSearch?: () => void;
   isSearchLoading?: boolean;
+  searchQuery?: string;
   scrollY?: Animated.Value;
 }
 
@@ -28,9 +30,11 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
   onSearch,
   onClearSearch,
   isSearchLoading = false,
+  searchQuery = '',
   scrollY,
 }) => {
-  const headerHeight = 100;
+  const insets = useSafeAreaInsets();
+  const headerHeight = 60 + insets.top;
   const lastScrollY = useRef(0);
   const headerTranslateY = useRef(new Animated.Value(0)).current;
   const headerOpacity = useRef(new Animated.Value(1)).current;
@@ -94,13 +98,15 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
     return () => {
       scrollY.removeListener(listener);
     };
-  }, [scrollY, headerTranslateY, headerOpacity]);
+  }, [scrollY, headerTranslateY, headerOpacity, headerHeight]);
 
   return (
     <Animated.View 
       style={[
         styles.header,
         {
+          paddingTop: insets.top,
+          height: headerHeight,
           transform: [{ translateY: headerTranslateY }],
           opacity: headerOpacity,
         }
@@ -122,6 +128,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
             onClear={onClearSearch}
             isLoading={isSearchLoading}
             compact={true}
+            searchQuery={searchQuery}
           />
         </View>
       ) : (

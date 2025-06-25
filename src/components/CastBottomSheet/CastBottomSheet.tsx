@@ -1,11 +1,19 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 import CustomBottomSheet from '../BottomSheet/BottomSheet';
 import { colors } from '../../constants/colors';
-import { CastMember, useTmdbApi } from '../../services/tmdbService';
+import { CastMember } from '../../services/tmdbService';
 import { styles } from './CastBottomSheet.style';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
+import { usePersonDetails } from '../../hooks/useMovieDetails';
+
+const { width: screenWidth } = Dimensions.get('window');
+
+// Movie item dimensions for horizontal FlatList
+const MOVIE_ITEM_WIDTH = 120;
+const MOVIE_ITEM_MARGIN = 12;
+const MOVIE_ITEM_TOTAL_WIDTH = MOVIE_ITEM_WIDTH + MOVIE_ITEM_MARGIN;
 
 interface CastBottomSheetProps {
   isVisible: boolean;
@@ -20,11 +28,14 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
   selectedCastMember,
   movieTitle,
 }) => {
-  const [personDetails, setPersonDetails] = React.useState<any>(null);
   const navigation = useAppNavigation<'MovieDetail'>();
-
-  // API hook for person details
-  const personDetailsApi = useTmdbApi.usePersonDetails();
+  const {
+    personDetails,
+    personLoading,
+    personError,
+    fetchPersonDetails,
+    clearPersonData,
+  } = usePersonDetails();
 
   const getImageUrl = (path?: string) => {
     if (!path) return null;
@@ -33,38 +44,31 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
 
   React.useEffect(() => {
     if (selectedCastMember && isVisible) {
-      // Reset person details when a new cast member is selected
-      setPersonDetails(null);
       fetchPersonDetails(selectedCastMember.id);
     }
-  }, [selectedCastMember?.id, isVisible]);
 
-  const fetchPersonDetails = async (personId: number) => {
-    try {
-      const details = await personDetailsApi.execute(personId);
-      if (details) {
-        setPersonDetails(details);
-      }
-    } catch (error) {
-      console.error('Error fetching person details:', error);
-    }
-  };
+    // Cleanup when component unmounts or cast member changes
+    return () => {
+      clearPersonData();
+    };
+  }, [selectedCastMember?.id, isVisible, fetchPersonDetails, clearPersonData]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Bilinmiyor';
     return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
-  const handleMoviePress = (movie: any) => {
+  const handleMoviePress = useCallback((movie: any) => {
     // Close the bottom sheet first
     onClose();
     // Navigate to movie detail after a short delay to allow bottom sheet to close
     setTimeout(() => {
       navigation.navigate('MovieDetail', { movieId: movie.id });
     }, 300);
-  };
+  }, [onClose, navigation]);
 
-  const renderMovieItem = ({ item: movie }: { item: any }) => (
+  // Memoized render item for movie list
+  const renderMovieItem = useCallback(({ item: movie }: { item: any }) => (
     <TouchableOpacity 
       style={styles.movieItem}
       onPress={() => handleMoviePress(movie)}
@@ -95,14 +99,34 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
         </Text>
       </View>
     </TouchableOpacity>
-  );
+  ), [handleMoviePress]);
 
-  const renderCastMemberDetails = () => (
+  // Memoized key extractor for movie list
+  const movieKeyExtractor = useCallback((item: any) => `movie-${item.id}`, []);
+
+  // Memoized getItemLayout for horizontal FlatList
+  const getMovieItemLayout = useCallback((data: any, index: number) => ({
+    length: MOVIE_ITEM_TOTAL_WIDTH,
+    offset: MOVIE_ITEM_TOTAL_WIDTH * index,
+    index,
+  }), []);
+
+  // Calculate initial number to render based on screen width
+  const movieInitialNumToRender = useMemo(() => {
+    const visibleItems = Math.ceil(screenWidth / MOVIE_ITEM_TOTAL_WIDTH) + 1;
+    return Math.min(visibleItems, personDetails?.combined_credits?.cast?.length || 0);
+  }, [personDetails?.combined_credits?.cast?.length]);
+
+  const renderCastMemberDetails = useCallback(() => (
     <View style={styles.container}>
-      {personDetailsApi.loading ? (
+      {personLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.blue} />
           <Text style={styles.loadingText}>Oyuncu bilgileri yükleniyor...</Text>
+        </View>
+      ) : personError ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{personError}</Text>
         </View>
       ) : personDetails ? (
         <>
@@ -185,11 +209,19 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
                   
                   <FlatList
                     data={personDetails.combined_credits.cast.slice(0, 20)}
+                    renderItem={renderMovieItem}
+                    keyExtractor={movieKeyExtractor}
                     horizontal
+                    bounces={false}
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.moviesList}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderMovieItem}
+                    getItemLayout={getMovieItemLayout}
+                    initialNumToRender={movieInitialNumToRender}
+                    removeClippedSubviews={true}
+                    maxToRenderPerBatch={4}
+                    windowSize={5}
+                    updateCellsBatchingPeriod={50}
+                    scrollEventThrottle={16}
                   />
                 </View>
               )}
@@ -202,7 +234,7 @@ const CastBottomSheet: React.FC<CastBottomSheetProps> = ({
         </View>
       )}
     </View>
-  );
+  ), [personLoading, personError, personDetails, selectedCastMember, renderMovieItem, movieKeyExtractor, getMovieItemLayout, movieInitialNumToRender]);
 
   return (
     <CustomBottomSheet

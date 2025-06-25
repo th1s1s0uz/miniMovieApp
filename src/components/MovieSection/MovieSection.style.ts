@@ -15,4 +15,7 @@ export const styles = StyleSheet.create({
       color: colors.white,
       marginBottom: 0,
     },
+    flatListContent: {
+      paddingHorizontal: 8,
+    },
   });

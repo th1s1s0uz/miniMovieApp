@@ -17,6 +17,22 @@ export const styles = StyleSheet.create({
       flex: 1,
       padding: 12,
     },
+    favoritesContent: {
+      paddingHorizontal: 8,
+      // paddingTop and paddingBottom will be set dynamically based on safe area insets
+    },
+    emptyContentContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 60,
+    },
+    movieItem: {
+      flex: 1,
+      marginHorizontal: 4,
+      marginBottom: 16,
+      maxWidth: '48%',
+    },
     subtitle: {
       fontSize: 16,
       color: colors.white,

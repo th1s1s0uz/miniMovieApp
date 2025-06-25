@@ -12,9 +12,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 50,
     backgroundColor: 'transparent',
-    height: 100,
   },
   leftContainer: {
     flexDirection: 'row',

@@ -1,24 +1,23 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Animated, RefreshControl } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View, Text, Animated, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppNavigation } from '../../navigation/AppNavigatorPaths';
 import AppNavigatorPaths from '../../navigation/AppNavigatorPaths';
 import { CustomHeader } from '../../components/CustomHeader/CustomHeader';
 import { HomeContent } from '../../components/HomeContent/HomeContent';
-import { Movie, useTmdbApi } from '../../services/tmdbService';
+import { CustomLoader } from '../../components/CustomLoader/CustomLoader';
+import { Movie } from '../../services/tmdbService';
 import { colors } from '../../constants/colors';
 import { useMovies } from '../../hooks/useMovies';
-import { useAppDispatch } from '../../store/hooks';
-import { loadFavorites } from '../../store/favoritesThunks';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useSearch } from '../../hooks/useSearch';
+import { useAppSelector } from '../../store/hooks';
 import { styles } from './Home.style';
 
 export function Home() {
   const navigation = useAppNavigation<keyof typeof AppNavigatorPaths>();
-  const dispatch = useAppDispatch();
-  const [searchResults, setSearchResults] = useState<Movie[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
   const scrollY = new Animated.Value(0);
+  const scrollViewRef = useRef<any>(null);
   
   const {
     trendingMovies,
@@ -33,53 +32,51 @@ export function Home() {
     onRefresh,
   } = useMovies();
 
-  // Search API hook
-  const searchApi = useTmdbApi.useSearchMovies();
+  // Favorites hook
+  const { loadFavorites } = useFavorites();
+
+  // Search hook
+  const { 
+    searchResults, 
+    searchQuery,
+    loading: searchLoading, 
+    error: searchError, 
+    hasSearched,
+    searchMovies, 
+    clearSearch 
+  } = useSearch();
 
   // Load favorites from storage when component mounts
   useEffect(() => {
-    dispatch(loadFavorites());
-  }, [dispatch]);
+    loadFavorites();
+  }, []);
+
+  // Scroll to top only when switching to search mode
+  useEffect(() => {
+    if (scrollViewRef.current && hasSearched) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  }, [hasSearched]);
 
   const handleMoviePress = (movie: Movie) => {
     navigation.navigate('MovieDetail', { movieId: movie.id });
   };
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setHasSearched(false);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const result = await searchApi.execute(query, 1);
-      if (result) {
-        setSearchResults(result.results);
-        setHasSearched(true);
-      } else {
-        setSearchResults([]);
-      setHasSearched(true);
-      }
-    } catch (error) {
-      setSearchResults([]);
-      setHasSearched(true);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [searchApi]);
+  const handleSearch = useCallback((query: string) => {
+    searchMovies(query);
+  }, [searchMovies]);
 
   const handleClearSearch = useCallback(() => {
-    setSearchResults([]);
-    setHasSearched(false);
-    searchApi.reset();
-  }, [searchApi]);
+    clearSearch();
+  }, [clearSearch]);
 
   const renderLoading = () => (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color={colors.blue} />
-      <Text style={styles.loadingText}>Filmler yükleniyor...</Text>
+      <CustomLoader
+        size="large"
+        text="Filmler yükleniyor..."
+        showText={true}
+      />
     </View>
   );
 
@@ -93,10 +90,18 @@ export function Home() {
 
   const renderContent = () => {
     if (hasSearched) {
-      if (isSearching) {
-        return null;
+      if (searchLoading) {
+        return (
+          <View style={styles.loadingContainer}>
+            <CustomLoader
+              size="medium"
+              text="Aranıyor..."
+              showText={true}
+            />
+          </View>
+        );
       } else if (searchResults.length > 0) {
-  return (
+        return (
           <HomeContent
             trendingMovies={trendingMovies}
             popularMovies={popularMovies}
@@ -109,10 +114,15 @@ export function Home() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             isSearchMode={true}
+            scrollY={scrollY}
           />
         );
       } else {
-        return null;
+        return (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Arama sonucu bulunamadı</Text>
+          </View>
+        );
       }
     } else if (error) {
       return renderError();
@@ -128,6 +138,7 @@ export function Home() {
           onMoviePress={handleMoviePress}
           refreshing={refreshing}
           onRefresh={onRefresh}
+          scrollY={scrollY}
         />
       );
     }
@@ -140,7 +151,8 @@ export function Home() {
           showSearch={true}
           onSearch={handleSearch}
           onClearSearch={handleClearSearch}
-          isSearchLoading={isSearching}
+          isSearchLoading={searchLoading}
+          searchQuery={searchQuery}
           scrollY={scrollY}
         />
         {renderLoading()}
@@ -161,40 +173,11 @@ export function Home() {
         showSearch={true}
         onSearch={handleSearch}
         onClearSearch={handleClearSearch}
-        isSearchLoading={isSearching}
+        isSearchLoading={searchLoading}
+        searchQuery={searchQuery}
         scrollY={scrollY}
       />
-      {hasSearched && isSearching ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.blue} />
-          <Text style={styles.loadingText}>Aranıyor...</Text>
-        </View>
-      ) : hasSearched && searchResults.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Arama sonucu bulunamadı</Text>
-        </View>
-      ) : (
-        <Animated.ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
-          scrollEventThrottle={8}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.blue}
-              colors={[colors.blue]}
-            />
-          }
-        >
-          {renderContent()}
-        </Animated.ScrollView>
-      )}
+      {renderContent()}
     </View>
   );
 }

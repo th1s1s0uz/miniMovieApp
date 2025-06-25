@@ -10,6 +10,7 @@ interface SearchBarProps {
   placeholder?: string;
   isLoading?: boolean;
   compact?: boolean;
+  searchQuery?: string; // Redux state'ten gelen query
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 
@@ -17,14 +18,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onClear, 
   placeholder = "Film ara...", 
   isLoading = false,
-  compact = false
+  compact = false,
+  searchQuery = ''
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(searchQuery);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentSearchRef = useRef('');
 
+  // Redux state ile senkronize et
+  useEffect(() => {
+    setQuery(searchQuery);
+  }, [searchQuery]);
+
   const debouncedSearch = useCallback((searchQuery: string) => {
-    
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -40,7 +46,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       }
       
       currentSearchRef.current = trimmedQuery;
-      onSearch(trimmedQuery || '');
+      onSearch(trimmedQuery);
     }, 500);
   }, [onSearch]);
 
@@ -62,10 +68,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    onSearch('');
     if (onClear) {
       onClear();
     }
-  }, [onClear]);
+  }, [onSearch, onClear]);
 
   return (
     <View style={[styles.container, compact && styles.compactContainer]}>
